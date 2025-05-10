@@ -18,11 +18,48 @@ let innerTop = 0;
 let resizeEnabled = true;
 const DEFAULT_PAGE = "ReadMe.md";
 
+// IPFS Configuration (loaded from project.toml)
+let ipfsCid = null;
+
 // Environment Detection
 const isEmbedded = window !== window.parent;
 if (isEmbedded) {
   document.body.classList.remove("body_standalone");
   document.body.classList.add("body_embedded");
+}
+
+/**
+ * Load IPFS configuration from project.toml
+ */
+async function loadConfig() {
+  try {
+    console.log("Loading configuration from project.toml");
+    const response = await fetch('./project.toml');
+    if (!response.ok) {
+      console.error(`[IPFS] Failed to load project.toml: ${response.statusText}`);
+      return false;
+    }
+
+    const tomlContent = await response.text();
+    console.log("project.toml content:", tomlContent);
+
+    // Very simple TOML parser for our basic needs
+    const cidMatch = tomlContent.match(/cid\s*=\s*"([^"]+)"/);
+    const apiVersionMatch = tomlContent.match(/api_version\s*=\s*"([^"]+)"/);
+
+    if (cidMatch && cidMatch[1]) {
+      ipfsCid = cidMatch[1];
+      console.log(`Loaded CID: ${ipfsCid}`);
+    } else {
+      console.error("[IPFS] Could not find IPFS CID in project.toml");
+      return false;
+    }
+
+    return true;
+  } catch (error) {
+    console.error("[IPFS] Error loading IPFS config:", error);
+    return false;
+  }
 }
 
 /**
@@ -117,8 +154,15 @@ function positionUIElements(topSpace) {
   githubButton.style.right = donateButton.clientWidth + topSpace / 7 + downloadButton.clientWidth + 2 * topSpace / 7;
 }
 
-// Initialize layout on load
-resize();
+// Initialize IPFS configuration and layout on load
+loadConfig().then(() => {
+  console.log("TOML Configuration loaded.");
+  resize();
+}).catch(error => {
+  console.error("Failed to load IPFS configuration:", error);
+  // Continue with layout initialization even if IPFS config fails
+  resize();
+});
 
 /**
  * Load appropriate project file based on file type
@@ -134,30 +178,25 @@ async function loadProjectPage(filePath) {
   }
 }
 
+
 /**
  * Load and display a code file with syntax highlighting
  * @param {string} filePath - Path to the code file
  */
 async function loadProjectCodeFile(filePath) {
-  if (filePath[0] !== "/") {
-    filePath = "/" + filePath;
-  }
-  filePath = "./ProjectFiles" + filePath;
-  
   try {
     const language = getFileExtension(filePath);
-    
-    // Fetch file content
+
     const response = await fetch(filePath);
     if (!response.ok) throw new Error(`Failed to load ${filePath}: ${response.statusText}`);
     const codeContent = await response.text();
-    
+
     // Update code element and apply highlighting
     delete codeElement.dataset.highlighted;
     codeElement.className = `language-${language}`;
     codeElement.textContent = codeContent;
     hljs.highlightElement(codeElement);
-    
+
     // Show code view, hide markdown view
     mdRenderer.style.visibility = "hidden";
     codeBlock.style.visibility = "visible";
@@ -170,28 +209,69 @@ async function loadProjectCodeFile(filePath) {
 }
 
 /**
- * get a list of fioles and subfolders contained in a directory
+ * Get a list of files and subfolders contained in a directory using IPFS API
  * @param {string} dirPath - Path to the directory to list
+ * @returns {Array} Array of file/directory objects with paths and metadata
  */
- async function listProjectDir(dirPath) {
-   const response = await fetch('./ProjectFiles/'+dirPath+'/');
-   const htmlText = await response.text();
+async function listProjectDir(dirPath) {
+  try {
+    
+    // Construct the IPFS path - for root directory use just the CID
+    const url = `./ProjectFiles/${dirPath}?format=dag-json`;
+    try {
+      const response = await fetch(url, {
+        headers: {
+          'Accept': 'application/vnd.ipld.dag-json'
+        }
+      });
 
-   const parser = new DOMParser();
-   const doc = parser.parseFromString(htmlText, 'text/html');
+      if (!response.ok) {
+        throw new Error(`HTTP error ${response.status}`);
+      }
 
-   const links = Array.from(doc.querySelectorAll('body a'));
+      const dagJson = await response.json();
+      const base64Data = dagJson?.Data?.['/']?.bytes;
+      const links = dagJson?.Links ?? [];
+      return links;
+    } catch (err) {
+      console.error("Failed to fetch or decode:", err);
+      return null;
+    }
 
-   const filePaths = links
-     .map(a => a.getAttribute('href'))
-     .filter(href =>
-       href &&
-       href.startsWith('/ProjectFiles/') && // Only absolute paths to resources in the folder
-       !href.endsWith('/..')                // Exclude parent directory
-     );
+    if (!response.ok) {
+      console.error(`[IPFS] API error response: ${await response.text()}`);
+      throw new Error(`IPFS API error (${response.status}): ${response.statusText}`);
+    }
 
-   return filePaths;
- }
+    const data = await response.json();
+    console.log(`[IPFS] Directory list response:`, data);
+
+    if (!data.Objects || !data.Objects[0] || !data.Objects[0].Links) {
+      console.warn(`[IPFS] No links found in directory: ${dirPath || 'root'}`);
+      return [];
+    }
+
+    // Process the links and return an array of file/directory paths with metadata
+    const results = data.Objects[0].Links.map(link => {
+      // Create a path relative to ProjectFiles for backward compatibility
+      const relativePath = dirPath ? `${dirPath}/${link.Name}` : link.Name;
+
+      return {
+        path: relativePath,
+        name: link.Name,
+        isDirectory: link.Type === 1,  // Type 1 is directory, 2 is file
+        size: link.Size,
+        hash: link.Hash
+      };
+    });
+
+    console.log(`[IPFS] Processed ${results.length} items in directory: ${dirPath || 'root'}`);
+    return results;
+  } catch (error) {
+    console.error(`[IPFS] Error listing directory ${dirPath || 'root'}:`, error);
+    return [];
+  }
+}
 
 /**
  * Load and display a markdown file
@@ -201,6 +281,8 @@ async function loadProjectMarkdownFile(filePath) {
   if (filePath[0] !== "/") {
     filePath = "/" + filePath;
   }
+
+  // Pass the IPFS CID in the URL to the markdown renderer
   mdRenderer.src = `md_renderer.html#${filePath}`;
   mdRenderer.style.visibility = "visible";
   codeBlock.style.visibility = "hidden";
@@ -217,24 +299,34 @@ function getFileExtension(filePath) {
 }
 
 /**
- * Check if a resource exists at the specified path
+ * Check if a path is part of our project
  * @param {string} path - Path to check
  * @returns {string|null} Path if resource exists, null otherwise
  */
-async function isLocalResource(path) {
+async function isProjectResource(path) {
   if (!path) return null;
-  
-  const resourcePath = decodeURIComponent(path);
-  
+
+  // If path starts with ProjectFiles/, remove it to get the relative path
+  let relativePath = path;
+  if (relativePath.startsWith('ProjectFiles/')) {
+    relativePath = relativePath.substring('ProjectFiles/'.length);
+  }
+
   try {
-    const response = await fetch(resourcePath);
     
-    if (response.ok) {
-      return resourcePath;
-    } else {
-      const retryResponse = await fetch(resourcePath);
-      return retryResponse.ok ? resourcePath : null;
-    }
+    // Use the IPFS API to check if the file exists
+    // We can use the /ls API to check the file's parent directory
+    const pathParts = relativePath.split('/');
+    const fileName = pathParts.pop();
+    const parentDir = pathParts.join('/');
+
+    // Get the parent directory contents
+    const dirContents = await listProjectDir(parentDir);
+
+    // Check if any item in the directory matches the file name
+    const fileExists = dirContents.some(item => item.name === fileName);
+
+    return fileExists ? path : null;
   } catch (error) {
     console.error(`Error checking resource: ${error}`);
     return null;
@@ -282,8 +374,8 @@ async function renderProjectPage() {
   
   // Set content ID and check if requested file exists
   contentContainer.id = "content";
-  const resource = await isLocalResource("ProjectFiles/" + fileValue);
-  
+  const resource = await isProjectResource(fileValue);
+
   if (resource === null) {
     fileValue = DEFAULT_PAGE;
   }
@@ -350,10 +442,13 @@ async function changeSiteSubpage(file, name = "") {
   if (name === "") {
     name = file.split("/").reverse()[0].split(".")[0];
   }
+  console.log("Changing Site page to:");
+  console.log(file);
   
   if (file[0] !== "/") {
     file = "/" + file;
   }
+  file = `/ProjectFiles/${file}`
   
   loadProjectPage(file);
   setUrlFile(file.substring(1));

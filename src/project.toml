@@ -1,0 +1,6 @@
+[ipfs]
+# The Content ID (CID) of the project root on IPFS
+cid = "bafybeiht5b52yheqwgoo7fvir45bdm27u6ycbksm4bt6bqlhmudyo3m74a"
+
+# IPFS API version
+api_version = "v0"

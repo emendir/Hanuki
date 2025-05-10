@@ -26,46 +26,49 @@
     .tree-folder {
       font-weight: 500;
     }
-    
+
     /* Aligning both files and folders to the same left margin */
-    .tree-folder, .tree-file {
+    .tree-folder,
+    .tree-file {
       margin-left: 0;
     }
-    
+
     .tree-folder-content {
       border-left: 1px solid #ccc;
       margin-left: 8px;
-      padding-left: 20px;
+      padding-left: 14px;
       display: none;
     }
-    
+
     .tree-folder-content.active {
       display: block;
     }
-    
-    .folder-icon, .file-icon {
+
+    .folder-icon,
+    .file-icon {
       display: inline-block;
-      width: 20px;
-      height: 20px;
+      width: 14px;
+      height: 14px;
       margin-right: 5px;
       text-align: center;
     }
-    
+
     .folder-icon:before {
       content: '▶';
       font-size: 12px;
     }
-    
+
     .folder-icon.expanded:before {
       content: '▼';
     }
-    
+
     .file-icon:before {
-      content: '📄';
+      /* content: '📄'; */
+      content: '—';
       font-size: 12px;
-      opacity: 0;
+      opacity: 0.6;
     }
-    
+
     /* Hover effect for items */
     .tree-item:hover {
       background-color: rgba(0, 0, 0, 0.05);
@@ -83,156 +86,133 @@
     // Main function to initialize the tree
     async function initFileExplorer() {
       const rootElement = document.getElementById('explorer');
-      
+      console.log("Initialising file explorer.");
       try {
         // Start building the tree from the ProjectFiles directory
-        await buildTreeNode(rootElement, '');
+        const tree = await buildTreeNode('/');
+        console.log(tree)
+        // tree.classList.add("active");
+        tree.folderContent.classList.remove("tree-folder-content");
+        rootElement.appendChild(tree.folderContent);
+        tree.folderContent.classList.add('active');
       } catch (error) {
         console.error('Error initializing file explorer:', error);
       }
     }
-    
-    // Check if a path is a directory by trying to list its contents
-    async function isDirectory(path) {
-      try {
-        const contents = await parent.listProjectDir(path);
-        return contents && contents.length > 0;
-      } catch (error) {
-        return false;
-      }
-    }
-    
+
     // Function to build a tree node and its children recursively
-    async function buildTreeNode(parentElement, dirPath) {
+    async function buildTreeNode(dirPath) {
       try {
+        var basename = dirPath.substring(dirPath.lastIndexOf('/') + 1);
+        if (basename == "")
+        basename = "/";
         // Call the parent window's listProjectDir function
-        const filePaths = await parent.listProjectDir(dirPath);
-        
-        if (!filePaths || filePaths.length === 0) {
-          console.log('No files found in:', dirPath);
-          return;
+        const subPaths = await parent.listProjectDir(dirPath);
+        if (!subPaths || subPaths.length === 0) {
+          // Create file element
+          const fileItem = document.createElement('li');
+          fileItem.className = 'tree-item tree-file';
+
+          const fileIcon = document.createElement('span');
+          fileIcon.className = 'file-icon';
+
+          const fileName = document.createElement('span');
+          fileName.textContent = basename;
+
+          fileItem.appendChild(fileIcon);
+          fileItem.appendChild(fileName);
+
+          // Add click handler to open the file
+          fileItem.addEventListener('click', function(event) {
+            event.stopPropagation();
+            parent.ChangeSiteSubpage(`${dirPath}`, basename);
+          });
+          console.log("Returning:");
+          console.log(fileItem)
+          return fileItem;
         }
-        
-        // Extract unique items from the current directory level
-        const items = new Map();
-        
-        for (const path of filePaths) {
-          // Extract the relative path after /ProjectFiles/
-          const relativePath = path.split('/ProjectFiles/')[1];
-          if (!relativePath) continue;
-          
-          // Handle path with proper folder structure
-          const pathParts = relativePath.split('/').filter(part => part);
-          
-          if (pathParts.length === 0) continue;
-          
-          // If we're at the root, just take the first part
-          // If we're in a subfolder, compare with the current dirPath
-          let itemName;
-          let itemPath;
-          
-          if (!dirPath) {
-            // At root level
-            itemName = pathParts[0];
-            itemPath = itemName;
-          } else {
-            // In a subfolder - extract the next part after the current dirPath
-            const dirParts = dirPath.split('/').filter(part => part);
-            if (pathParts.length <= dirParts.length) continue;
-            
-            itemName = pathParts[dirParts.length];
-            itemPath = dirPath + '/' + itemName;
+
+
+        // Process each item using the new IPFS metadata
+        var fileElements = [];
+        var folderElements = [];
+        for (const subPath of subPaths) {
+          // console.log(subPath)
+          if (subPath.Name == "/" || subPath.Name == "" || subPath.Name == ".")
+            continue
+          const subItem = await buildTreeNode(`${dirPath}/${subPath.Name}`);
+          if (subItem) {
+            if (subItem.classList.contains('tree-file')) {
+              fileElements.push(subItem);
+            }
+            else if (subItem.classList.contains('tree-folder')) {
+              folderElements.push(subItem);
+            }
+            else{
+              console.log("SKIPPING");
+              console.log(subItem);
+            }
           }
-          
-          // Skip if we've already processed this item
-          if (items.has(itemName)) continue;
-          
-          // Add to items map
-          items.set(itemName, itemPath);
         }
         
+        
+        // this path is a folder
+
         // Create containers for folders and files so we can display folders first
-        const folderElements = [];
-        const fileElements = [];
+        // Create folder element
+        const folderItem = document.createElement('li');
+        folderItem.className = 'tree-item tree-folder';
+
+        const folderIcon = document.createElement('span');
+        folderIcon.className = 'folder-icon';
+
+        const folderName = document.createElement('span');
+        folderName.textContent = basename;
+
+        folderItem.appendChild(folderIcon);
+        folderItem.appendChild(folderName);
         
-        // Process each item, checking if it's a directory or file
-        for (const [itemName, itemPath] of items) {
-          const isDir = await isDirectory(itemPath);
-          
-          if (isDir) {
-            // Create folder element
-            const folderItem = document.createElement('li');
-            folderItem.className = 'tree-item tree-folder';
-            
-            const folderIcon = document.createElement('span');
-            folderIcon.className = 'folder-icon';
-            
-            const folderName = document.createElement('span');
-            folderName.textContent = itemName;
-            
-            folderItem.appendChild(folderIcon);
-            folderItem.appendChild(folderName);
-            
-            // Create a container for folder contents
-            const folderContent = document.createElement('ul');
-            folderContent.className = 'tree-folder-content';
-            
-            // Add click handler to toggle folder expansion
-            folderItem.addEventListener('click', function(event) {
-              event.stopPropagation();
-              folderIcon.classList.toggle('expanded');
-              folderContent.classList.toggle('active');
-              
-              // Only load contents the first time the folder is expanded
-              if (folderContent.dataset.loaded !== 'true') {
-                buildTreeNode(folderContent, itemPath);
-                folderContent.dataset.loaded = 'true';
-              }
-            });
-            
-            // Add folder item and its content container to the list
-            folderElements.push({ folderItem, folderContent });
-          } else {
-            // Create file element
-            const fileItem = document.createElement('li');
-            fileItem.className = 'tree-item tree-file';
-            
-            const fileIcon = document.createElement('span');
-            fileIcon.className = 'file-icon';
-            
-            const fileName = document.createElement('span');
-            fileName.textContent = itemName;
-            
-            fileItem.appendChild(fileIcon);
-            fileItem.appendChild(fileName);
-            
-            // Add click handler to open the file
-            fileItem.addEventListener('click', function(event) {
-              event.stopPropagation();
-              parent.ChangeSiteSubpage(itemPath, itemName);
-            });
-            
-            fileElements.push(fileItem);
-          }
-        }
+  
+        // Create a container for folder contents
+        const folderContent = document.createElement('ul');
+        folderContent.dataset.loaded = 'true';
+        folderContent.className = 'tree-folder-content';
+        // folderItem.appendChild(folderContent);
+
+        // Add click handler to toggle folder expansion
+        folderItem.addEventListener('click', function(event) {
+          event.stopPropagation();
+          folderIcon.classList.toggle('expanded');
+          folderContent.classList.toggle('active');
+        });
         
         // Add folders first, then files
-        folderElements.forEach(({ folderItem, folderContent }) => {
-          parentElement.appendChild(folderItem);
-          parentElement.appendChild(folderContent);
-        });
+        for(const item of folderElements) {
+          folderContent.appendChild(item);
+        }
+        for(const item of fileElements) {
+          folderContent.appendChild(item);
+        }
         
-        fileElements.forEach(fileItem => {
-          parentElement.appendChild(fileItem);
-        });
+        const folderall = document.createElement('span');
+        folderall.className="tree-folder";
+        folderall.appendChild(folderItem);
+        folderall.appendChild(folderContent);
+        folderall.folderContent = folderContent;
+        
+        
+
+        console.log("Built tree!");
+        return folderall;
       } catch (error) {
         console.error('Error building tree node:', error);
+        return null;
       }
     }
-    
+
     // Initialize when the document is loaded
     document.addEventListener('DOMContentLoaded', initFileExplorer);
-    
+
     // Function to scale font sizes for all elements
     function Scale(scale) {
       document.querySelectorAll('.tree-item').forEach(item => {
@@ -241,4 +221,5 @@
     }
   </script>
 </body>
+
 </html>
