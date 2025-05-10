@@ -1,0 +1,99 @@
+.body_standalone {
+  overflow: hidden;
+  background-color: #250700;
+  margin: 0;
+}
+
+.body_embedded {
+  overflow: hidden;
+  background-color: #0000;
+}
+
+.leftborders {
+  position: absolute;
+  top: 0;
+  left: 0;
+  visibility: hidden;
+}
+
+.rightborders {
+  position: absolute;
+  top: 0;
+  right: 0;
+  visibility: hidden;
+}
+
+.Content {
+  position: absolute;
+  top: 250;
+  left: 250;
+  z-index: 1000;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+iframe {
+  border: none;
+}
+
+.ContentSub {
+  width: 100%;
+  /* Fill the width of the container */
+  height: 100%;
+  /* Fill the height of the container */
+  display: block;
+  /* Ensures no extra space below the object */
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.PageTitle {
+  position: absolute;
+  top: 160;
+  left: 0;
+  color: #fff;
+  font-size: 30;
+}
+
+.Title {
+  position: absolute;
+  top: 50;
+  left: 50;
+  color: #ff5;
+  font-size: 50;
+  white-space: nowrap;
+}
+
+.FolderSidebar {
+  position: absolute;
+  left: 0;
+  color: #fff;
+  font-size: 50;
+}
+
+.DownloadButton {
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+.GithubButton {
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+.Donate {
+  position: absolute;
+  right: 0;
+  top: 0;
+  font-size: 30;
+  display: flex;
+  justify-content: center;
+  /* Centers horizontally */
+  align-items: center;
+  /* Centers vertically */
+  color: white;
+  /* Optional text color */
+}
