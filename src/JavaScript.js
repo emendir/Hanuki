@@ -170,6 +170,30 @@ async function loadProjectCodeFile(filePath) {
 }
 
 /**
+ * get a list of fioles and subfolders contained in a directory
+ * @param {string} dirPath - Path to the directory to list
+ */
+ async function listProjectDir(dirPath) {
+   const response = await fetch('./ProjectFiles/'+dirPath+'/');
+   const htmlText = await response.text();
+
+   const parser = new DOMParser();
+   const doc = parser.parseFromString(htmlText, 'text/html');
+
+   const links = Array.from(doc.querySelectorAll('body a'));
+
+   const filePaths = links
+     .map(a => a.getAttribute('href'))
+     .filter(href =>
+       href &&
+       href.startsWith('/ProjectFiles/') && // Only absolute paths to resources in the folder
+       !href.endsWith('/..')                // Exclude parent directory
+     );
+
+   return filePaths;
+ }
+
+/**
  * Load and display a markdown file
  * @param {string} filePath - Path to the markdown file
  */
