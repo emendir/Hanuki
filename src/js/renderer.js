@@ -1,12 +1,19 @@
 // renderer.js - Module for rendering project files and content
 
-import { PROJECT_FILES_PATH, getFileExtension, getRelativeProjectPath } from './filesystem.js';
+import { PROJECT_FILES_PATH, getFileExtension, getRelativeProjectPath , encodePathForUrl, fetchProjectFile, getProjectFileUrl} from './filesystem.js';
 
 // UI Components for rendering (these will be initialized later)
 let contentContainer = null;
 let codeBlock = null;
 let codeElement = null;
 let mdRenderer = null;
+let htmlRenderer = null;
+let mediaContainer = null;
+
+// File type categories
+const IMAGE_TYPES = ['jpg', 'jpeg', 'png', 'gif', 'svg', 'webp'];
+const VIDEO_TYPES = ['mp4', 'webm', 'ogg', 'mov'];
+const AUDIO_TYPES = ['mp3', 'wav', 'ogg', 'flac'];
 
 /**
  * Load appropriate project file based on file type
@@ -14,9 +21,17 @@ let mdRenderer = null;
  */
 async function loadProjectPage(filePath) {
   const fileType = getFileExtension(filePath);
-  
+
   if (fileType === "md") {
     loadProjectMarkdownFile(filePath);
+  } else if (fileType === "html" || fileType === "htm") {
+    loadProjectHtmlFile(filePath);
+  } else if (IMAGE_TYPES.includes(fileType)) {
+    loadProjectImageFile(filePath);
+  } else if (VIDEO_TYPES.includes(fileType)) {
+    loadProjectVideoFile(filePath);
+  } else if (AUDIO_TYPES.includes(fileType)) {
+    loadProjectAudioFile(filePath);
   } else {
     loadProjectCodeFile(filePath);
   }
@@ -30,9 +45,7 @@ async function loadProjectCodeFile(filePath) {
   try {
     const language = getFileExtension(filePath);
 
-    const response = await fetch(`${PROJECT_FILES_PATH}/${filePath}`);
-    if (!response.ok) throw new Error(`Failed to load ${filePath}: ${response.statusText}`);
-    const codeContent = await response.text();
+    const codeContent = await fetchProjectFile(filePath);
 
     // Update code element and apply highlighting
     delete codeElement.dataset.highlighted;
@@ -40,14 +53,14 @@ async function loadProjectCodeFile(filePath) {
     codeElement.textContent = codeContent;
     hljs.highlightElement(codeElement);
 
-    // Show code view, hide markdown view
+    // Show code view, hide other views
     mdRenderer.style.visibility = "hidden";
+    htmlRenderer.style.visibility = "hidden";
+    mediaContainer.style.visibility = "hidden";
     codeBlock.style.visibility = "visible";
   } catch (error) {
     console.error(error);
-    const errorElement = document.createElement('div');
-    errorElement.textContent = `Error loading file: ${error.message}`;
-    contentContainer.appendChild(errorElement);
+    showErrorMessage(`Error loading file: ${error.message}`);
   }
 }
 
@@ -56,14 +69,127 @@ async function loadProjectCodeFile(filePath) {
  * @param {string} filePath - Path to the markdown file
  */
 async function loadProjectMarkdownFile(filePath) {
-
   const relativePath = getRelativeProjectPath(filePath);
-  // console.log(`Loading MD: ${relativePath}`)
+  console.log(`Loading MD: ${relativePath}`)
 
   // Pass the file path in the URL to the markdown renderer
   mdRenderer.src = `md_renderer.html#${relativePath}`;
   mdRenderer.style.visibility = "visible";
   codeBlock.style.visibility = "hidden";
+  htmlRenderer.style.visibility = "hidden";
+  mediaContainer.style.visibility = "hidden";
+}
+
+/**
+ * Load and display an HTML file as a rendered page
+ * @param {string} filePath - Path to the HTML file
+ */
+async function loadProjectHtmlFile(filePath) {
+  try {
+    // Get full file URL
+    const fileUrl = getProjectFileUrl(filePath);
+
+    // Set the src of the iframe to display the HTML
+    htmlRenderer.src = fileUrl;
+    htmlRenderer.style.visibility = "visible";
+
+    // Hide other content elements
+    codeBlock.style.visibility = "hidden";
+    mdRenderer.style.visibility = "hidden";
+    mediaContainer.style.visibility = "hidden";
+  } catch (error) {
+    console.error(`Error loading HTML file: ${error}`);
+    showErrorMessage(`Error loading HTML file: ${error.message}`);
+  }
+}
+
+/**
+ * Load and display an image file
+ * @param {string} filePath - Path to the image file
+ */
+async function loadProjectImageFile(filePath) {
+  try {
+    // Clear previous media content
+    mediaContainer.innerHTML = '';
+
+    // Create image element
+    const imgElement = document.createElement('img');
+    imgElement.src = getProjectFileUrl(filePath);
+    imgElement.style.maxWidth = '100%';
+    imgElement.style.maxHeight = '100%';
+    imgElement.style.objectFit = 'contain';
+
+    // Add image to container
+    mediaContainer.appendChild(imgElement);
+
+    // Show media container and hide other content elements
+    mediaContainer.style.visibility = "visible";
+    codeBlock.style.visibility = "hidden";
+    mdRenderer.style.visibility = "hidden";
+    htmlRenderer.style.visibility = "hidden";
+  } catch (error) {
+    console.error(`Error loading image file: ${error}`);
+    showErrorMessage(`Error loading image file: ${error.message}`);
+  }
+}
+
+/**
+ * Load and display a video file
+ * @param {string} filePath - Path to the video file
+ */
+async function loadProjectVideoFile(filePath) {
+  try {
+    // Clear previous media content
+    mediaContainer.innerHTML = '';
+
+    // Create video element
+    const videoElement = document.createElement('video');
+    videoElement.src = getProjectFileUrl(filePath);
+    videoElement.controls = true;
+    videoElement.style.maxWidth = '100%';
+    videoElement.style.maxHeight = '100%';
+
+    // Add video to container
+    mediaContainer.appendChild(videoElement);
+
+    // Show media container and hide other content elements
+    mediaContainer.style.visibility = "visible";
+    codeBlock.style.visibility = "hidden";
+    mdRenderer.style.visibility = "hidden";
+    htmlRenderer.style.visibility = "hidden";
+  } catch (error) {
+    console.error(`Error loading video file: ${error}`);
+    showErrorMessage(`Error loading video file: ${error.message}`);
+  }
+}
+
+/**
+ * Load and display an audio file
+ * @param {string} filePath - Path to the audio file
+ */
+async function loadProjectAudioFile(filePath) {
+  try {
+    // Clear previous media content
+    mediaContainer.innerHTML = '';
+
+    // Create audio element
+    const audioElement = document.createElement('audio');
+    audioElement.src = getProjectFileUrl(filePath);
+    audioElement.controls = true;
+    audioElement.style.width = '80%';
+
+    // Add audio to container
+    mediaContainer.appendChild(audioElement);
+
+    // Show media container and hide other content elements
+    mediaContainer.style.visibility = "visible";
+    codeBlock.style.visibility = "hidden";
+    mdRenderer.style.visibility = "hidden";
+    htmlRenderer.style.visibility = "hidden";
+  } catch (error) {
+    console.error(`Error loading audio file: ${error}`);
+    showErrorMessage(`Error loading audio file: ${error.message}`);
+  }
 }
 
 /**
@@ -79,41 +205,66 @@ function removeMarkdownBackground() {
  */
 function initRenderer(container) {
   contentContainer = container;
-  
+
   // Create code display elements
   codeBlock = document.createElement('pre');
   codeBlock.classList.add("ContentSub");
   codeBlock.style.visibility = "hidden";
   codeElement = document.createElement('code');
-  
+
   // Create markdown renderer
   mdRenderer = document.createElement('iframe');
   mdRenderer.id = "md_renderer";
   mdRenderer.classList.add("ContentSub");
   mdRenderer.style.visibility = "hidden";
-  
+
+  // Create HTML renderer
+  htmlRenderer = document.createElement('iframe');
+  htmlRenderer.id = "html_renderer";
+  htmlRenderer.classList.add("ContentSub");
+  htmlRenderer.style.visibility = "hidden";
+  htmlRenderer.sandbox = "allow-same-origin allow-scripts";
+
+  // Create media container for images, videos, and audio
+  mediaContainer = document.createElement('div');
+  mediaContainer.id = "media_container";
+  mediaContainer.classList.add("ContentSub");
+  mediaContainer.style.visibility = "hidden";
+  mediaContainer.style.display = "flex";
+  mediaContainer.style.justifyContent = "center";
+  mediaContainer.style.alignItems = "center";
+  mediaContainer.style.overflow = "auto";
+
   // Assemble content container
   codeBlock.appendChild(codeElement);
   contentContainer.appendChild(codeBlock);
   contentContainer.appendChild(mdRenderer);
+  contentContainer.appendChild(htmlRenderer);
+  contentContainer.appendChild(mediaContainer);
   mdRenderer.addEventListener("load", removeMarkdownBackground);
 }
 
 // Scrollbar control functions
 async function activateScrollbars() {
   if (!contentContainer) return;
-  
+
   codeBlock.style.overflow = "auto";
   mdRenderer.style.overflow = "auto";
   mdRenderer.scrolling = "yes";
+  htmlRenderer.style.overflow = "auto";
+  htmlRenderer.scrolling = "yes";
+  mediaContainer.style.overflow = "auto";
 }
 
 async function deactivateScrollbars() {
   if (!contentContainer) return;
-  
+
   codeBlock.style.overflow = "hidden";
   mdRenderer.style.overflow = "hidden";
   mdRenderer.scrolling = "no";
+  htmlRenderer.style.overflow = "hidden";
+  htmlRenderer.scrolling = "no";
+  mediaContainer.style.overflow = "hidden";
 }
 
 // Content selection control
@@ -125,6 +276,24 @@ async function makeContentSelectable() {
 async function makeContentUnselectable() {
   if (!contentContainer) return;
   contentContainer.style.pointerEvents = "none";
+}
+
+/**
+ * Display an error message in the content container
+ * @param {string} message - Error message to display
+ */
+function showErrorMessage(message) {
+  // Clear any previous error messages
+  const existingErrors = contentContainer.querySelectorAll('.error-message');
+  existingErrors.forEach(el => el.remove());
+
+  // Create and show new error message
+  const errorElement = document.createElement('div');
+  errorElement.className = 'error-message';
+  errorElement.style.color = 'red';
+  errorElement.style.padding = '20px';
+  errorElement.textContent = message;
+  contentContainer.appendChild(errorElement);
 }
 
 // Export public API

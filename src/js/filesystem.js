@@ -5,38 +5,69 @@ const PROJECT_FILES_PATH = '/ProjectFiles';
 const DEFAULT_PAGE = '/ReadMe.md';
 
 /**
+ * Replaces spaces with URL-safe symbols
+ * @param {string} path - Path to encode
+ * @returns {string} encoded path
+ */
+function encodePathForUrl(path) {
+  if (path === null)
+    return null
+  return path
+    .split("/")
+    .map(encodeURIComponent) // encode each path segment
+    .join("/");
+}
+function decodePathFromUrl(path) {
+  if (path === null)
+    return null
+  return path
+    .split("/")
+    .map(decodeURIComponent) // encode each path segment
+    .join("/");
+}
+function getProjectFileUrl(filePath) {
+  const safePath = encodePathForUrl(getRelativeProjectPath(filePath));
+  const fullPath = normalizePath(`/${PROJECT_FILES_PATH}/${safePath}`)
+  return `${window.location.origin}${fullPath}`;
+}
+async function fetchProjectFile(filePath) {
+  const response = await fetch(getProjectFileUrl(filePath));
+  if (!response.ok) throw new Error(`Failed to load ${filePath}: ${response.statusText}`);
+  return await response.text();
+}
+/**
  * Get a list of files and subfolders contained in a directory
  * @param {string} dirPath - Path to the directory to list
  * @returns {Array} Array of file/directory objects with paths and metadata
  */
 async function listProjectDir(dirPath) {
   try {
-    // Construct the path - for root directory use just the path
-    const url = `${PROJECT_FILES_PATH}/${dirPath}?format=dag-json`;
+    const url = `${getProjectFileUrl(dirPath)}?format=dag-json`;
     // console.log(url);
-    try {
-      const response = await fetch(url, {
-        headers: {
-          'Accept': 'application/vnd.ipld.dag-json'
-        }
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error ${response.status}`);
+    const response = await fetch(url, {
+      headers: {
+        'Accept': 'application/vnd.ipld.dag-json'
       }
+    });
 
-      const dagJson = await response.json();
+    if (!response.ok) {
+      throw new Error(`HTTP error ${response.status}`);
+    }
+
+    const dagJson = await response.json();
+    const content = dagJson?.Data?.["/"]?.bytes;
+    if (content == "CAE") {
       const links = dagJson?.Links ?? [];
       return links;
-    } catch (err) {
-      console.error("Failed to fetch or decode:", err);
-      return null;
-    }
-  } catch (error) {
-    console.error(`Error listing directory ${dirPath || 'root'}:`, error);
-    return [];
+    } else
+      return [];
+
+  } catch (err) {
+    console.error("Failed to fetch or decode:", err);
+    return null;
   }
 }
+
 
 /**
  * Normalize a path by removing redundant slashes and trimming leading/trailing slashes
@@ -45,9 +76,9 @@ async function listProjectDir(dirPath) {
  */
 function normalizePath(path) {
   return path
-    .replace(/\/{2,}/g, '/')      // Replace repeated slashes with one
-    // .replace(/^\.?\/*/, '')       // Remove leading './' or '/'
-    // .replace(/\/+$/, '');         // Remove trailing slashes
+    .replace(/\/{2,}/g, '/') // Replace repeated slashes with one
+  // .replace(/^\.?\/*/, '')       // Remove leading './' or '/'
+  // .replace(/\/+$/, '');         // Remove trailing slashes
 }
 
 /**
@@ -129,7 +160,10 @@ async function loadConfig() {
     if (cidMatch && cidMatch[1]) {
       const ipfsCid = cidMatch[1];
       console.log(`Loaded CID: ${ipfsCid}`);
-      return { cid: ipfsCid, apiVersion: apiVersionMatch?.[1] || 'v0' };
+      return {
+        cid: ipfsCid,
+        apiVersion: apiVersionMatch?.[1] || 'v0'
+      };
     } else {
       console.error("Could not find IPFS CID in project.toml");
       return false;
@@ -149,5 +183,9 @@ export {
   isProjectResource,
   getFileExtension,
   getRelativeProjectPath,
-  normalizePath
+  normalizePath,
+  encodePathForUrl,
+  fetchProjectFile,
+  getProjectFileUrl,
+  decodePathFromUrl
 };

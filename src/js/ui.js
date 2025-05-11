@@ -1,6 +1,6 @@
 // ui.js - Module for managing the main website UI
 
-import { PROJECT_FILES_PATH, DEFAULT_PAGE, isProjectResource, normalizePath } from './filesystem.js';
+import { PROJECT_FILES_PATH, DEFAULT_PAGE, isProjectResource, normalizePath, encodePathForUrl, decodePathFromUrl } from './filesystem.js';
 import { loadProjectPage, initRenderer } from './renderer.js';
 
 // DOM Elements
@@ -137,7 +137,7 @@ async function renderProjectPage() {
   
   // Parse URL parameters to determine which file to display
   const urlParams = new URLSearchParams(window.location.search);
-  let fileValue = urlParams.get('file');
+  let fileValue = decodePathFromUrl(urlParams.get('file'));
   const resource = await isProjectResource(fileValue);
   // console.log(`[renderProjectPage]: ${fileValue} ${resource === null}`)
   if (resource === null) {
@@ -204,7 +204,9 @@ async function downloadSource() {
 async function setUrlFile(filePath) {
   const currentUrl = new URL(window.location.href);
   const urlParams = currentUrl.searchParams;
-  console.log(`Setting URL: ${filePath}`);
+  // const safePath = encodePathForUrl(filePath);
+
+  // console.log(`Setting URL: ${filePath}`);
   urlParams.set('file', filePath);
   currentUrl.search = urlParams.toString();
   
