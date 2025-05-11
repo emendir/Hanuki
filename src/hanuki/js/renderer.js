@@ -73,7 +73,7 @@ async function loadProjectMarkdownFile(filePath) {
   console.log(`Loading MD: ${relativePath}`)
 
   // Pass the file path in the URL to the markdown renderer
-  mdRenderer.src = `md_renderer.html#${relativePath}`;
+  mdRenderer.src = `hanuki/md_renderer.html#${relativePath}`;
   mdRenderer.style.visibility = "visible";
   codeBlock.style.visibility = "hidden";
   htmlRenderer.style.visibility = "hidden";

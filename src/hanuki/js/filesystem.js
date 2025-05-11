@@ -144,7 +144,7 @@ function getFileExtension(filePath) {
 async function loadConfig() {
   try {
     console.log("Loading configuration from project.toml");
-    const response = await fetch('./project.toml');
+    const response = await fetch('/hanuki.toml');
     if (!response.ok) {
       console.error(`Failed to load project.toml: ${response.statusText}`);
       return false;

@@ -148,7 +148,6 @@ async function renderProjectPage() {
   if (!contentContainer){
   // Create content container
   contentContainer = document.createElement('div');
-  contentContainer.id = "content_container";
   
   // Set content ID and check if requested file exists
   contentContainer.id = "content";
@@ -164,7 +163,7 @@ async function renderProjectPage() {
   // Create and add folder sidebar
   folderSidebar = document.createElement('object');
   folderSidebar.id = "folder_sidebar";
-  folderSidebar.data = "./TreeSidebar.html";
+  folderSidebar.data = "/hanuki/TreeSidebar.html";
   folderSidebar.style.position = "absolute";
   folderSidebar.style.visibility = "hidden";
   document.body.appendChild(folderSidebar);
