@@ -12,7 +12,7 @@ It allows the user to explore a notebook or code repository in their browser wit
 
 ## Installation
 
-- When Hanuki is installed to a project folder, it simply creates the following files:
+When Hanuki is installed to a project folder, it simply creates the following files:
   - `.hanuki`: contains most of the Hanuki static website code 
   - `index.html`: the web-browser's entry-point to the Hanuki static website code
   - `.hanuki.toml`: a configuration file to set things like the project name 

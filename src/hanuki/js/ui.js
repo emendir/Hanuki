@@ -129,23 +129,7 @@ function positionUIElements(topSpace) {
   githubButton.height = topSpace * 3 / 7;
   githubButton.style.right = donateButton.clientWidth + topSpace / 7 + downloadButton.clientWidth + 2 * topSpace / 7;
 }
-
-/**
- * Render the project page with file content and sidebar
- */
-async function renderProjectPage() {
-  
-  // Parse URL parameters to determine which file to display
-  const urlParams = new URLSearchParams(window.location.search);
-  let fileValue = decodePathFromUrl(urlParams.get('file'));
-  const resource = await isProjectResource(fileValue);
-  // console.log(`[renderProjectPage]: ${fileValue} ${resource === null}`)
-  if (resource === null) {
-    fileValue = DEFAULT_PAGE;
-  }
-  
-  
-  if (!contentContainer){
+function createProjectSiteContainer(){
   // Create content container
   contentContainer = document.createElement('div');
   
@@ -167,13 +151,27 @@ async function renderProjectPage() {
   folderSidebar.style.position = "absolute";
   folderSidebar.style.visibility = "hidden";
   document.body.appendChild(folderSidebar);
+}
+/**
+ * Render the project page with file content and sidebar
+ */
+async function renderProjectPage() {
   
+  // Parse URL parameters to determine which file to display
+  const urlParams = new URLSearchParams(window.location.search);
+  let fileValue = decodePathFromUrl(urlParams.get('file'));
+  const resource = await isProjectResource(fileValue);
+  // console.log(`[renderProjectPage]: ${fileValue} ${resource === null}`)
+  if (resource === null) {
+    fileValue = DEFAULT_PAGE;
   }
-  else{
-    return
+  
+  
+  if (!contentContainer){
+    createProjectSiteContainer()
+  
   }
 
-  
 
   
   // Update URL and load content

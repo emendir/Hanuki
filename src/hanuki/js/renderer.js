@@ -70,10 +70,54 @@ async function loadProjectCodeFile(filePath) {
  */
 async function loadProjectMarkdownFile(filePath) {
   const relativePath = getRelativeProjectPath(filePath);
-  console.log(`Loading MD: ${relativePath}`)
+  console.log(`Loading MD: ${relativePath}`);
 
-  // Pass the file path in the URL to the markdown renderer
-  mdRenderer.src = `hanuki/md_renderer.html#${relativePath}`;
+  // Create a new document for markdown rendering
+  mdRenderer.src = 'about:blank';
+
+  // Wait for iframe to load before configuring
+  mdRenderer.onload = () => {
+    const doc = mdRenderer.contentDocument;
+
+    // Create basic HTML structure
+    doc.open();
+    doc.write(`
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1.0, shrink-to-fit=no, viewport-fit=cover">
+        <title>Document</title>
+        <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify/themes/dark.css" />
+      </head>
+      <body>
+        <div id="app"></div>
+        <script>
+          // Docsify Configuration
+          window.$docsify = {
+            name: 'Simple Docsify Template',
+            basePath: '${PROJECT_FILES_PATH}/',
+            relativePath: true,
+            hideSidebar: true,
+            homepage: '${relativePath}',
+          };
+        </script>
+        <script src="https://cdn.jsdelivr.net/npm/docsify@4/lib/docsify.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/docsify@4/lib/plugins/zoom-image.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/docsify@4/lib/plugins/search.js"></script>
+      </body>
+      </html>
+    `);
+    doc.close();
+
+    // Remove background when loaded
+    setTimeout(() => {
+      if (doc.body) {
+        doc.body.style.background = "#0000";
+      }
+    }, 100);
+  };
+
   mdRenderer.style.visibility = "visible";
   codeBlock.style.visibility = "hidden";
   htmlRenderer.style.visibility = "hidden";
