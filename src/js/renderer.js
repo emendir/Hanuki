@@ -1,6 +1,6 @@
 // renderer.js - Module for rendering project files and content
 
-import { PROJECT_FILES_PATH, getFileExtension } from './filesystem.js';
+import { PROJECT_FILES_PATH, getFileExtension, getRelativeProjectPath } from './filesystem.js';
 
 // UI Components for rendering (these will be initialized later)
 let contentContainer = null;
@@ -56,12 +56,12 @@ async function loadProjectCodeFile(filePath) {
  * @param {string} filePath - Path to the markdown file
  */
 async function loadProjectMarkdownFile(filePath) {
-  if (filePath[0] !== "/") {
-    filePath = "/" + filePath;
-  }
+
+  const relativePath = getRelativeProjectPath(filePath);
+  console.log(`Loading MD: ${relativePath}`)
 
   // Pass the file path in the URL to the markdown renderer
-  mdRenderer.src = `md_renderer.html#${filePath}`;
+  mdRenderer.src = `md_renderer.html#${relativePath}`;
   mdRenderer.style.visibility = "visible";
   codeBlock.style.visibility = "hidden";
 }

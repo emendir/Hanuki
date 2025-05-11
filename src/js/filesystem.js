@@ -39,6 +39,40 @@ async function listProjectDir(dirPath) {
 }
 
 /**
+ * Normalize a path by removing redundant slashes and trimming leading/trailing slashes
+ * @param {string} path - The path to normalize
+ * @returns {string} A cleaned path string
+ */
+function normalizePath(path) {
+  return path
+    .replace(/\/{2,}/g, '/')      // Replace repeated slashes with one
+    .replace(/^\.?\/*/, '')       // Remove leading './' or '/'
+    .replace(/\/+$/, '');         // Remove trailing slashes
+}
+
+/**
+ * Get the relative path from a full project path.
+ * Strips the project files base path prefix and normalizes repeated slashes.
+ * Handles flexible PROJECT_FILES_PATH formats like "./ProjectFiles", "/ProjectFiles", etc.
+ * @param {string} fullPath - The full path to evaluate
+ * @returns {string} The normalized relative path within the project
+ */
+function getRelativeProjectPath(fullPath) {
+  if (!fullPath) return '';
+
+  const normalizedFullPath = normalizePath(fullPath);
+  const normalizedProjectPath = normalizePath(PROJECT_FILES_PATH);
+
+  if (normalizedFullPath.startsWith(`${normalizedProjectPath}/`)) {
+    return normalizedFullPath.substring(`${normalizedProjectPath}/`.length);
+  }
+
+  return normalizedFullPath;
+}
+
+
+
+/**
  * Check if a path is part of our project
  * @param {string} path - Path to check
  * @returns {string|null} Path if resource exists, null otherwise
@@ -46,22 +80,14 @@ async function listProjectDir(dirPath) {
 async function isProjectResource(path) {
   if (!path) return null;
 
-  // If path starts with ProjectFiles/, remove it to get the relative path
-  let relativePath = path;
-  if (relativePath.startsWith(`${PROJECT_FILES_PATH}/`)) {
-    relativePath = relativePath.substring(`${PROJECT_FILES_PATH}/`.length);
-  }
+  const relativePath = getRelativeProjectPath(path);
 
   try {
-    // Check if the file exists by checking the parent directory
     const pathParts = relativePath.split('/');
     const fileName = pathParts.pop();
     const parentDir = pathParts.join('/');
 
-    // Get the parent directory contents
     const dirContents = await listProjectDir(parentDir);
-
-    // Check if any item in the directory matches the file name
     const fileExists = dirContents.some(item => item.name === fileName);
 
     return fileExists ? path : null;
@@ -70,6 +96,7 @@ async function isProjectResource(path) {
     return null;
   }
 }
+
 
 /**
  * Extract file extension from a path
@@ -121,5 +148,6 @@ export {
   loadConfig,
   listProjectDir,
   isProjectResource,
-  getFileExtension
+  getFileExtension,
+  getRelativeProjectPath
 };
