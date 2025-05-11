@@ -1,20 +1,37 @@
 // main.js - Main entry point for the application
 
-import { loadConfig, listProjectDir } from './filesystem.js';
+import { loadConfig, listProjectDir, filterDirectoryItems } from './filesystem.js';
 import { activateScrollbars, deactivateScrollbars, makeContentSelectable, makeContentUnselectable } from './renderer.js';
 import { initUI, resize, downloadSource, changeSiteSubpage, scale, onLoad, onMouseMove, onMouseWheel, onMouseUp } from './ui.js';
+
+// Global configuration
+window.hanukiConfig = null;
 
 // Initialize the application
 async function initApp() {
   // Initialize UI components
   initUI();
-  
+
   // Load configuration
   const config = await loadConfig();
-  console.log("TOML Configuration loaded:", config);
-  
+  console.log("Configuration loaded:", config);
+
+  // Store configuration globally
+  window.hanukiConfig = config;
+
   // Initialize layout
   resize();
+}
+
+// Enhanced version of listProjectDir that applies filtering
+async function listFilteredProjectDir(dirPath, mode = 'treeView') {
+  const items = await listProjectDir(dirPath);
+
+  if (window.hanukiConfig) {
+    return filterDirectoryItems(items, dirPath, window.hanukiConfig, mode);
+  }
+
+  return items;
 }
 
 // Start the application when DOM is loaded
@@ -35,6 +52,7 @@ window.onMouseMove = onMouseMove;
 window.onMouseWheel = onMouseWheel;
 window.onMouseUp = onMouseUp;
 window.listProjectDir = listProjectDir;
+window.listFilteredProjectDir = listFilteredProjectDir;
 
 // Legacy PascalCase versions (for backward compatibility)
 window.Resize = resize;
@@ -50,3 +68,4 @@ window.OnMouseMove = onMouseMove;
 window.OnMouseWheel = onMouseWheel;
 window.OnMouseUp = onMouseUp;
 window.ListProjectDir = listProjectDir;
+window.ListFilteredProjectDir = listFilteredProjectDir;

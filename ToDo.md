@@ -1,3 +1,8 @@
+## Config
+
+- gitignore - implemented in config, but not yet in practice
+- project name
+
 ## Renderer
 
 - html: ¿use markdown renderer?

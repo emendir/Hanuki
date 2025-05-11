@@ -22,8 +22,10 @@ async function initFileExplorer() {
     // Create the root folder (ProjectFiles)
     const rootName = '/';
 
-    // Start by only loading the root level
-    const rootPaths = await parent.listProjectDir(rootName);
+    // Start by only loading the root level, using filtered listing if available
+    const rootPaths = parent.listFilteredProjectDir
+      ? await parent.listFilteredProjectDir(rootName, 'treeView')
+      : await parent.listProjectDir(rootName);
 
     // Create the root container which will be visible initially
     const rootContainer = document.createElement('ul');
@@ -149,9 +151,12 @@ async function loadFolderContent(folderContainer) {
     }
 
     const fullPath = `${folderContainer.dataset.path}/${pathItem.Name}`;
-    
+
     try {
-      const childPaths = await parent.listProjectDir(fullPath);
+      // Use filtered directory listing if available
+      const childPaths = parent.listFilteredProjectDir
+        ? await parent.listFilteredProjectDir(fullPath, 'treeView')
+        : await parent.listProjectDir(fullPath);
       const isFile = childPaths.length === 0;
 
       if (isFile) {

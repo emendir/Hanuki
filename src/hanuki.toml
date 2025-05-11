@@ -4,3 +4,21 @@ cid = "bafybeiht5b52yheqwgoo7fvir45bdm27u6ycbksm4bt6bqlhmudyo3m74a"
 
 # IPFS API version
 api_version = "v0"
+
+[TreeView]
+# NOT WORKING YET Whether to use .gitignore patterns for the tree view
+use_gitignore = true
+# Patterns to include in the tree view even if they would be ignored by gitignore
+include = []
+# Patterns to ignore in the tree view
+ignore = ["*.log", "**/__pycache__", "*.egg-info",".mypy_cache", ".ccls-cache"]
+
+[IpfsPublishing]
+# NOT WORKING YET Whether to use TreeView ignore settings for IPFS publishing
+use_treeview_ignore = true
+# Whether to use .gitignore patterns for IPFS publishing (overrides use_treeview_ignore)
+use_gitignore = true
+# Patterns to include when publishing to IPFS even if they would be ignored
+include = []
+# Patterns to ignore when publishing to IPFS
+ignore = []
