@@ -88,7 +88,7 @@ async function loadProjectMarkdownFile(filePath) {
       <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1.0, shrink-to-fit=no, viewport-fit=cover">
-        <title>Document</title>
+        <title>TITLE</title>
         <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify/themes/dark.css" />
       </head>
       <body>
@@ -97,8 +97,8 @@ async function loadProjectMarkdownFile(filePath) {
           // Docsify Configuration
           window.$docsify = {
             name: 'Simple Docsify Template',
-            basePath: '${PROJECT_FILES_PATH}/',
-            relativePath: true,
+            basePath: '${getProjectFileUrl("")}',
+            relativePath: false,
             hideSidebar: true,
             homepage: '${relativePath}',
             // Add router mode to enable full control over link behavior

@@ -1,7 +1,7 @@
 // filesystem.js - Module for interacting with the project filesystem
 
 // Project filesystem configuration
-const PROJECT_FILES_PATH = '/ProjectFiles';
+const PROJECT_FILES_PATH = '/';
 const DEFAULT_PAGE = '/ReadMe.md';
 
 /**

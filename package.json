@@ -1,0 +1,33 @@
+{
+  "name": "hanuki",
+  "version": "0.1.0",
+  "description": "Turn any code repository or markdown notebook into a website that can be hosted on IPFS",
+  "main": "bin/index.js",
+  "bin": {
+    "hanuki": "./bin/index.js"
+  },
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "ipfs",
+    "static-site",
+    "markdown",
+    "documentation",
+    "code-viewer"
+  ],
+  "author": "",
+  "license": "CC0-1.0",
+  "dependencies": {
+    "chalk": "^5.3.0",
+    "commander": "^11.1.0",
+    "fs-extra": "^11.2.0",
+    "glob": "^10.3.10",
+    "kubo-rpc-client": "^3.0.1",
+    "toml": "^3.0.0"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}
