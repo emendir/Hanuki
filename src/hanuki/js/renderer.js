@@ -1,6 +1,7 @@
 // renderer.js - Module for rendering project files and content
 
-import { PROJECT_FILES_PATH, getFileExtension, getRelativeProjectPath , encodePathForUrl, fetchProjectFile, getProjectFileUrl} from './filesystem.js';
+import { PROJECT_FILES_PATH, getFileExtension, getRelativeProjectPath, encodePathForUrl, fetchProjectFile, getProjectFileUrl} from './filesystem.js';
+import { setUrlFile } from './ui.js';
 
 // UI Components for rendering (these will be initialized later)
 let contentContainer = null;
@@ -100,7 +101,31 @@ async function loadProjectMarkdownFile(filePath) {
             relativePath: true,
             hideSidebar: true,
             homepage: '${relativePath}',
+            // Add router mode to enable full control over link behavior
+            routerMode: 'history'
           };
+
+          // Handle link clicks inside the renderer
+          document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(() => {
+              document.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A' && e.target.getAttribute('href')) {
+                  const link = e.target.getAttribute('href');
+
+                  // Only handle relative links (skip external links or anchors)
+                  if (link && !link.startsWith('http') && !link.startsWith('#')) {
+                    e.preventDefault();
+
+                    // Send message to parent window
+                    window.parent.postMessage({
+                      type: 'markdown-link-click',
+                      path: link
+                    }, '*');
+                  }
+                }
+              });
+            }, 1000); // Give Docsify time to initialize and render content
+          });
         </script>
         <script src="https://cdn.jsdelivr.net/npm/docsify@4/lib/docsify.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/docsify@4/lib/plugins/zoom-image.min.js"></script>
@@ -278,6 +303,39 @@ function initRenderer(container) {
   mediaContainer.style.justifyContent = "center";
   mediaContainer.style.alignItems = "center";
   mediaContainer.style.overflow = "auto";
+
+  // Set up message listener for link clicks from the iframe
+  window.addEventListener('message', async (event) => {
+    if (event.data && event.data.type === 'markdown-link-click' && !event.data.path.includes("=")) {
+      const path = event.data.path;
+      console.log(event);
+      if (path) {
+        // Determine if path is absolute or relative
+        let fullPath = path;
+        if (event.data.type=="markdown-link-click"){
+          fullPath+=".md";
+        }
+        if (!path.startsWith('/')) {
+          // For relative paths, resolve against current path
+          const currentPathParts = window.location.search.split('=')[1]?.split('/') || [];
+          if (currentPathParts.length > 0) {
+            // Remove the filename part
+            currentPathParts.pop();
+            const currentDir = currentPathParts.join('/');
+            fullPath = `${currentDir}/${path}`;
+          }
+        }
+
+        console.log(`Markdown link clicked: ${path}, navigating to: ${fullPath}`);
+
+        // Update URL and load the new page
+        await setUrlFile(fullPath);
+        // loadProjectPage(fullPath);
+      }
+    } else{
+      console.log(`[MD-Renderer]: Unhandled event of type ${event.data.type} for path ${event.data.path}`)
+    }
+  });
 
   // Assemble content container
   codeBlock.appendChild(codeElement);

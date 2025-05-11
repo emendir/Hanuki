@@ -287,5 +287,6 @@ export {
   onLoad,
   onMouseMove,
   onMouseWheel,
-  onMouseUp
+  onMouseUp,
+  setUrlFile
 };
