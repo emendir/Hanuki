@@ -1,5 +1,5 @@
 // treeSidebar.js - File Explorer module
-
+var CURRENT_PROJECT_PATH="";
 /**
  * Initializes the file explorer by creating the root directory view
  * and loading the initial directory structure.
@@ -11,6 +11,12 @@
  * @returns {Promise<void>}
  */
 async function initFileExplorer() {
+  // ensure we only load once for a given PROJECT_FILES_PATH
+  if (CURRENT_PROJECT_PATH == parent.PROJECT_FILES_PATH)
+    return
+  CURRENT_PROJECT_PATH = parent.PROJECT_FILES_PATH
+  console.log("Initialising File Explorer...")
+  
   const rootElement = document.getElementById('explorer');
   try {
     // Create the root folder (ProjectFiles)

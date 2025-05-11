@@ -1,6 +1,6 @@
 // ui.js - Module for managing the main website UI
 
-import { PROJECT_FILES_PATH, DEFAULT_PAGE, isProjectResource } from './filesystem.js';
+import { PROJECT_FILES_PATH, DEFAULT_PAGE, isProjectResource, normalizePath } from './filesystem.js';
 import { loadProjectPage, initRenderer } from './renderer.js';
 
 // DOM Elements
@@ -134,30 +134,27 @@ function positionUIElements(topSpace) {
  * Render the project page with file content and sidebar
  */
 async function renderProjectPage() {
-  if (contentContainer) return;
   
   // Parse URL parameters to determine which file to display
   const urlParams = new URLSearchParams(window.location.search);
   let fileValue = urlParams.get('file');
+  const resource = await isProjectResource(fileValue);
+  // console.log(`[renderProjectPage]: ${fileValue} ${resource === null}`)
+  if (resource === null) {
+    fileValue = DEFAULT_PAGE;
+  }
   
+  
+  if (!contentContainer){
   // Create content container
   contentContainer = document.createElement('div');
   contentContainer.id = "content_container";
   
   // Set content ID and check if requested file exists
   contentContainer.id = "content";
-  const resource = await isProjectResource(fileValue);
-
-  if (resource === null) {
-    fileValue = DEFAULT_PAGE;
-  }
   
   // Initialize the renderer with our container
   initRenderer(contentContainer);
-  
-  // Update URL and load content
-  await setUrlFile(fileValue);
-  loadProjectPage(fileValue);
   
   // Position and add content container to document
   contentContainer.style.position = "absolute";
@@ -171,6 +168,20 @@ async function renderProjectPage() {
   folderSidebar.style.position = "absolute";
   folderSidebar.style.visibility = "hidden";
   document.body.appendChild(folderSidebar);
+  
+  }
+  else{
+    return
+  }
+
+  
+
+  
+  // Update URL and load content
+  await setUrlFile(fileValue);
+  loadProjectPage(fileValue);
+  
+
 }
 
 /**
@@ -193,7 +204,7 @@ async function downloadSource() {
 async function setUrlFile(filePath) {
   const currentUrl = new URL(window.location.href);
   const urlParams = currentUrl.searchParams;
-  
+  console.log(`Setting URL: ${filePath}`);
   urlParams.set('file', filePath);
   currentUrl.search = urlParams.toString();
   
@@ -203,7 +214,7 @@ async function setUrlFile(filePath) {
 
 /**
  * Change the displayed subpage
- * @param {string} file - File path to display
+ * @param {string} file - File path to display, relative to PROJECT_FILES_PATH
  * @param {string} name - Display name (defaults to filename)
  */
 async function changeSiteSubpage(file, name = "") {
@@ -212,13 +223,12 @@ async function changeSiteSubpage(file, name = "") {
   }
   console.log("Changing Site page to:", file);
   
-  if (file[0] !== "/") {
-    file = "/" + file;
-  }
-  file = `/${PROJECT_FILES_PATH.substring(2)}${file}`;
+  // create clean absolute file path where root is PROJECT_FILES_PATH
+  file = normalizePath(`/${file}`);
+  // file = normalizePath(`/${PROJECT_FILES_PATH}/${file}`);
   
   loadProjectPage(file);
-  setUrlFile(file.substring(1));
+  setUrlFile(file);
   pageTitle.innerHTML = name;
   
   if (isEmbedded) {

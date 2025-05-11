@@ -1,8 +1,8 @@
 // filesystem.js - Module for interacting with the project filesystem
 
 // Project filesystem configuration
-const PROJECT_FILES_PATH = './ProjectFiles';
-const DEFAULT_PAGE = 'ReadMe.md';
+const PROJECT_FILES_PATH = '/ProjectFiles';
+const DEFAULT_PAGE = '/ReadMe.md';
 
 /**
  * Get a list of files and subfolders contained in a directory
@@ -13,7 +13,7 @@ async function listProjectDir(dirPath) {
   try {
     // Construct the path - for root directory use just the path
     const url = `${PROJECT_FILES_PATH}/${dirPath}?format=dag-json`;
-    
+    // console.log(url);
     try {
       const response = await fetch(url, {
         headers: {
@@ -46,8 +46,8 @@ async function listProjectDir(dirPath) {
 function normalizePath(path) {
   return path
     .replace(/\/{2,}/g, '/')      // Replace repeated slashes with one
-    .replace(/^\.?\/*/, '')       // Remove leading './' or '/'
-    .replace(/\/+$/, '');         // Remove trailing slashes
+    // .replace(/^\.?\/*/, '')       // Remove leading './' or '/'
+    // .replace(/\/+$/, '');         // Remove trailing slashes
 }
 
 /**
@@ -79,16 +79,15 @@ function getRelativeProjectPath(fullPath) {
  */
 async function isProjectResource(path) {
   if (!path) return null;
-
-  const relativePath = getRelativeProjectPath(path);
-
+  // ensure we have a full path where the root is the PROJECT_FILES_PATH
+  const relativePath = `${getRelativeProjectPath(path)}`;
   try {
     const pathParts = relativePath.split('/');
     const fileName = pathParts.pop();
     const parentDir = pathParts.join('/');
 
     const dirContents = await listProjectDir(parentDir);
-    const fileExists = dirContents.some(item => item.name === fileName);
+    const fileExists = dirContents.some(item => item.Name === fileName);
 
     return fileExists ? path : null;
   } catch (error) {
@@ -149,5 +148,6 @@ export {
   listProjectDir,
   isProjectResource,
   getFileExtension,
-  getRelativeProjectPath
+  getRelativeProjectPath,
+  normalizePath
 };

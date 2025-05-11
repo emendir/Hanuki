@@ -30,7 +30,7 @@ async function loadProjectCodeFile(filePath) {
   try {
     const language = getFileExtension(filePath);
 
-    const response = await fetch(filePath);
+    const response = await fetch(`${PROJECT_FILES_PATH}/${filePath}`);
     if (!response.ok) throw new Error(`Failed to load ${filePath}: ${response.statusText}`);
     const codeContent = await response.text();
 
@@ -58,7 +58,7 @@ async function loadProjectCodeFile(filePath) {
 async function loadProjectMarkdownFile(filePath) {
 
   const relativePath = getRelativeProjectPath(filePath);
-  console.log(`Loading MD: ${relativePath}`)
+  // console.log(`Loading MD: ${relativePath}`)
 
   // Pass the file path in the URL to the markdown renderer
   mdRenderer.src = `md_renderer.html#${relativePath}`;
