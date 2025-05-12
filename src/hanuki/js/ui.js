@@ -32,11 +32,30 @@ function initUI() {
   downloadButton = document.getElementById("download_btn");
   donateButton = document.getElementById("donate_btn");
   githubButton = document.getElementById("github_btn");
-  
+
   // Apply embedded class if needed
   if (isEmbedded) {
     document.body.classList.remove("body_standalone");
     document.body.classList.add("body_embedded");
+  }
+
+  // Set up an observer for the global configuration
+  // Since configuration is loaded asynchronously after UI initialization
+  const configObserver = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+      if (mutation.type === 'childList' && window.hanukiConfig) {
+        updateUIFromConfig(window.hanukiConfig);
+        configObserver.disconnect(); // Only need to run once when config is loaded
+      }
+    });
+  });
+
+  // Start observing document.body for changes
+  configObserver.observe(document.body, { childList: true, subtree: true });
+
+  // Also check if config is already loaded (might happen in some cases)
+  if (window.hanukiConfig) {
+    updateUIFromConfig(window.hanukiConfig);
   }
 }
 
@@ -185,10 +204,13 @@ async function renderProjectPage() {
  * Download source code as zip file
  */
 async function downloadSource() {
+  const projectName = window.hanukiConfig?.project?.name || siteTitle.textContent || "project";
+  const safeProjectName = projectName.replace(/[^a-zA-Z0-9-_]/g, "_");
+
   const anchor = document.createElement('a');
-  anchor.href = siteTitle.textContent + ".zip";
-  anchor.download = siteTitle.textContent + ".zip";
-  
+  anchor.href = safeProjectName + ".zip";
+  anchor.download = safeProjectName + ".zip";
+
   document.body.appendChild(anchor);
   anchor.click();
   document.body.removeChild(anchor);
@@ -277,6 +299,33 @@ async function onMouseUp(e) {
   this.dispatchEvent(new MouseEvent('mouseup', e));
 }
 
+/**
+ * Updates UI elements based on the application configuration
+ * @param {object} config - The application configuration object
+ */
+function updateUIFromConfig(config) {
+  if (!config || !config.project) return;
+
+  // Update title elements with the project name from config
+  if (config.project.name) {
+    if (pageTitle) pageTitle.textContent = config.project.name;
+    if (siteTitle) siteTitle.textContent = config.project.name;
+
+    // Also update document title
+    document.title = config.project.name;
+  }
+
+  // Set up GitHub button if repository URL is provided
+  if (config.project.urls && config.project.urls.repository && githubButton) {
+    githubButton.onclick = () => {
+      window.open(config.project.urls.repository, '_blank');
+    };
+    githubButton.style.display = 'block';
+  } else if (githubButton) {
+    githubButton.style.display = 'none';
+  }
+}
+
 // Export public API
 export {
   initUI,
@@ -288,5 +337,6 @@ export {
   onMouseMove,
   onMouseWheel,
   onMouseUp,
-  setUrlFile
+  setUrlFile,
+  updateUIFromConfig
 };

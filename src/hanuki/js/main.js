@@ -2,7 +2,7 @@
 
 import { loadConfig, listProjectDir, filterDirectoryItems } from './filesystem.js';
 import { activateScrollbars, deactivateScrollbars, makeContentSelectable, makeContentUnselectable } from './renderer.js';
-import { initUI, resize, downloadSource, changeSiteSubpage, scale, onLoad, onMouseMove, onMouseWheel, onMouseUp } from './ui.js';
+import { initUI, resize, downloadSource, changeSiteSubpage, scale, onLoad, onMouseMove, onMouseWheel, onMouseUp, updateUIFromConfig } from './ui.js';
 
 // Global configuration
 window.hanukiConfig = null;
@@ -18,6 +18,9 @@ async function initApp() {
 
   // Store configuration globally
   window.hanukiConfig = config;
+
+  // Update UI with configuration values
+  updateUIFromConfig(config);
 
   // Initialize layout
   resize();

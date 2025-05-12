@@ -141,19 +141,32 @@ function getFileExtension(filePath) {
 }
 
 /**
- * Load configuration from hanuki.toml
+ * Load configuration from hanuki.toml with fallback to pyproject.toml
  */
 async function loadConfig() {
   try {
-    console.log("Loading configuration from hanuki.toml");
-    const response = await fetch('/hanuki.toml');
+    // Try to load hanuki.toml first
+    console.log("Attempting to load configuration from hanuki.toml");
+    let response = await fetch('/hanuki.toml');
+
+    // If hanuki.toml is not found, try to load pyproject.toml
     if (!response.ok) {
-      console.error(`Failed to load hanuki.toml: ${response.statusText}`);
-      return false;
+      console.log("hanuki.toml not found, attempting to load from pyproject.toml");
+      response = await fetch('/pyproject.toml');
+
+      // If both files are not found, throw an error
+      if (!response.ok) {
+        console.error("Failed to load configuration: Neither hanuki.toml nor pyproject.toml found");
+        throw new Error("Configuration files not found");
+      }
+
+      console.log("Using pyproject.toml for configuration");
+    } else {
+      console.log("Using hanuki.toml for configuration");
     }
 
     const tomlContent = await response.text();
-    console.log("hanuki.toml content:", tomlContent);
+    console.log("TOML content:", tomlContent);
 
     // Parse TOML content using our custom parser
     const parsedToml = parseToml(tomlContent);
@@ -162,13 +175,26 @@ async function loadConfig() {
     // Map to Hanuki configuration structure
     const config = mapToHanukiConfig(parsedToml);
 
-    console.log(`Loaded configuration:`, config);
+    console.log("Loaded configuration:", config);
     return config;
   } catch (error) {
     console.error("Error loading config:", error);
 
     // Return a default configuration as fallback
     return {
+      project: {
+        name: "Unnamed Project",
+        version: "0.1.0",
+        description: "",
+        authors: [],
+        license: "",
+        keywords: [],
+        urls: {
+          repository: "",
+          documentation: "",
+          homepage: ""
+        }
+      },
       ipfs: {
         cid: null,
         apiVersion: 'v0'

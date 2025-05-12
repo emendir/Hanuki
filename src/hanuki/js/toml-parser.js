@@ -125,12 +125,25 @@ function parseArray(arrayStr, lines, lineIndex) {
 
 /**
  * Map the TOML configuration to the Hanuki configuration structure
- * 
+ *
  * @param {object} parsedToml - The parsed TOML object
  * @returns {object} - The Hanuki configuration object
  */
 function mapToHanukiConfig(parsedToml) {
   const config = {
+    project: {
+      name: "Unnamed Project",
+      version: "0.1.0",
+      description: "",
+      authors: [],
+      license: "",
+      keywords: [],
+      urls: {
+        repository: "",
+        documentation: "",
+        homepage: ""
+      }
+    },
     ipfs: {
       cid: null,
       apiVersion: 'v0'
@@ -147,35 +160,75 @@ function mapToHanukiConfig(parsedToml) {
       ignore: []
     }
   };
-  
+
+  // Map Project section
+  if (parsedToml.project) {
+    // Map basic project fields
+    config.project.name = parsedToml.project.name || config.project.name;
+    config.project.version = parsedToml.project.version || config.project.version;
+    config.project.description = parsedToml.project.description || config.project.description;
+    config.project.authors = Array.isArray(parsedToml.project.authors) ?
+      parsedToml.project.authors : config.project.authors;
+    config.project.license = parsedToml.project.license || config.project.license;
+    config.project.keywords = Array.isArray(parsedToml.project.keywords) ?
+      parsedToml.project.keywords : config.project.keywords;
+
+    // Map URLs from project.urls section
+    if (parsedToml.project.urls) {
+      config.project.urls.repository = parsedToml.project.urls.repository || config.project.urls.repository;
+      config.project.urls.documentation = parsedToml.project.urls.documentation || config.project.urls.documentation;
+      config.project.urls.homepage = parsedToml.project.urls.homepage || config.project.urls.homepage;
+    }
+  }
+
   // Map IPFS section
   if (parsedToml.ipfs) {
     config.ipfs.cid = parsedToml.ipfs.cid || config.ipfs.cid;
     config.ipfs.apiVersion = parsedToml.ipfs.api_version || config.ipfs.apiVersion;
   }
-  
-  // Map TreeView section
-  if (parsedToml.TreeView) {
-    config.treeView.useGitignore = parsedToml.TreeView.use_gitignore !== undefined ? 
+
+  // Map tree-view section (lowercase with hyphen)
+  if (parsedToml['tree-view']) {
+    config.treeView.useGitignore = parsedToml['tree-view'].use_gitignore !== undefined ?
+      parsedToml['tree-view'].use_gitignore : config.treeView.useGitignore;
+    config.treeView.include = Array.isArray(parsedToml['tree-view'].include) ?
+      parsedToml['tree-view'].include : config.treeView.include;
+    config.treeView.ignore = Array.isArray(parsedToml['tree-view'].ignore) ?
+      parsedToml['tree-view'].ignore : config.treeView.ignore;
+  }
+  // For backward compatibility
+  else if (parsedToml.TreeView) {
+    config.treeView.useGitignore = parsedToml.TreeView.use_gitignore !== undefined ?
       parsedToml.TreeView.use_gitignore : config.treeView.useGitignore;
-    config.treeView.include = Array.isArray(parsedToml.TreeView.include) ? 
+    config.treeView.include = Array.isArray(parsedToml.TreeView.include) ?
       parsedToml.TreeView.include : config.treeView.include;
-    config.treeView.ignore = Array.isArray(parsedToml.TreeView.ignore) ? 
+    config.treeView.ignore = Array.isArray(parsedToml.TreeView.ignore) ?
       parsedToml.TreeView.ignore : config.treeView.ignore;
   }
-  
-  // Map IpfsPublishing section
-  if (parsedToml.IpfsPublishing) {
-    config.ipfsPublishing.useTreeViewIgnore = parsedToml.IpfsPublishing.use_treeview_ignore !== undefined ? 
+
+  // Map ipfs-publishing section (lowercase with hyphen)
+  if (parsedToml['ipfs-publishing']) {
+    config.ipfsPublishing.useTreeViewIgnore = parsedToml['ipfs-publishing'].use_treeview_ignore !== undefined ?
+      parsedToml['ipfs-publishing'].use_treeview_ignore : config.ipfsPublishing.useTreeViewIgnore;
+    config.ipfsPublishing.useGitignore = parsedToml['ipfs-publishing'].use_gitignore !== undefined ?
+      parsedToml['ipfs-publishing'].use_gitignore : config.ipfsPublishing.useGitignore;
+    config.ipfsPublishing.include = Array.isArray(parsedToml['ipfs-publishing'].include) ?
+      parsedToml['ipfs-publishing'].include : config.ipfsPublishing.include;
+    config.ipfsPublishing.ignore = Array.isArray(parsedToml['ipfs-publishing'].ignore) ?
+      parsedToml['ipfs-publishing'].ignore : config.ipfsPublishing.ignore;
+  }
+  // For backward compatibility
+  else if (parsedToml.IpfsPublishing) {
+    config.ipfsPublishing.useTreeViewIgnore = parsedToml.IpfsPublishing.use_treeview_ignore !== undefined ?
       parsedToml.IpfsPublishing.use_treeview_ignore : config.ipfsPublishing.useTreeViewIgnore;
-    config.ipfsPublishing.useGitignore = parsedToml.IpfsPublishing.use_gitignore !== undefined ? 
+    config.ipfsPublishing.useGitignore = parsedToml.IpfsPublishing.use_gitignore !== undefined ?
       parsedToml.IpfsPublishing.use_gitignore : config.ipfsPublishing.useGitignore;
-    config.ipfsPublishing.include = Array.isArray(parsedToml.IpfsPublishing.include) ? 
+    config.ipfsPublishing.include = Array.isArray(parsedToml.IpfsPublishing.include) ?
       parsedToml.IpfsPublishing.include : config.ipfsPublishing.include;
-    config.ipfsPublishing.ignore = Array.isArray(parsedToml.IpfsPublishing.ignore) ? 
+    config.ipfsPublishing.ignore = Array.isArray(parsedToml.IpfsPublishing.ignore) ?
       parsedToml.IpfsPublishing.ignore : config.ipfsPublishing.ignore;
   }
-  
+
   return config;
 }
 
