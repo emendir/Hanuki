@@ -19,11 +19,15 @@ npm pack
 
 # Step 4: Get the tarball filename (latest version)
 TARBALL=$(ls -t hanuki-*.tgz | head -1)
+mv $TARBALL dist
+TARBALL="./dist/$TARBALL"
 echo "Using tarball: $TARBALL"
+
 
 # Step 5: Install globally without symlinking
 echo "Installing globally (without symlinking)..."
 npm install -g --no-link "./$TARBALL"
+
 
 # Step 6: Verify installation
 echo "Verifying installation..."
