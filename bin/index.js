@@ -55,15 +55,37 @@ program
       await fs.copy(path.join(sourceDir, 'index.html'), path.join(targetDir, 'index.html'));
       console.log(chalk.green('✓'), 'Copied index.html');
       
-      // Create hanuki.toml with default values
-      const tomlContent = `[ipfs]
-# The Content ID (CID) of the project root on IPFS
-cid = ""
+      // Copy hanuki.toml from source
+      await fs.copy(path.join(sourceDir, 'hanuki.toml'), path.join(targetDir, 'hanuki.toml'));
 
-# IPFS API version
-api_version = "v0"
-`;
-      await fs.writeFile(path.join(targetDir, 'hanuki.toml'), tomlContent);
+      // Update the CID to be empty for new installations
+      const configPath = path.join(targetDir, 'hanuki.toml');
+      const configContent = await fs.readFile(configPath, 'utf8');
+      try {
+        const config = toml.parse(configContent);
+        config.ipfs = config.ipfs || {};
+        config.ipfs.cid = ""; // Empty CID for new installations
+
+        // Serialize the config back to TOML format
+        let updatedToml = '';
+        for (const section in config) {
+          updatedToml += `[${section}]\n`;
+          for (const key in config[section]) {
+            const value = config[section][key];
+            if (Array.isArray(value)) {
+              updatedToml += `${key} = [${value.map(v => typeof v === 'string' ? `"${v}"` : v).join(', ')}]\n`;
+            } else {
+              updatedToml += `${key} = ${typeof value === 'string' ? `"${value}"` : value}\n`;
+            }
+          }
+          updatedToml += '\n';
+        }
+
+        // Write the updated config back
+        await fs.writeFile(configPath, updatedToml);
+      } catch (e) {
+        console.log(chalk.yellow('Warning: Could not parse configuration file, using default values'));
+      }
       console.log(chalk.green('✓'), 'Created hanuki.toml configuration file');
       
       console.log(chalk.green('\nHanuki has been successfully installed in the current directory.'));
@@ -114,15 +136,52 @@ program
       await fs.copy(path.join(sourceDir, 'index.html'), path.join(targetDir, 'index.html'));
       console.log(chalk.green('✓'), 'Updated index.html');
       
-      // Restore or create hanuki.toml with default values
-      let tomlContent = `[ipfs]
+      // Copy hanuki.toml from source, then restore existing CID
+      await fs.copy(path.join(sourceDir, 'hanuki.toml'), path.join(configPath));
+
+      // Read the new config file
+      const newConfigContent = await fs.readFile(configPath, 'utf8');
+      try {
+        const newConfig = toml.parse(newConfigContent);
+
+        // Restore the existing CID
+        if (existingConfig && existingConfig.ipfs && existingConfig.ipfs.cid) {
+          newConfig.ipfs = newConfig.ipfs || {};
+          newConfig.ipfs.cid = existingConfig.ipfs.cid;
+        } else {
+          newConfig.ipfs = newConfig.ipfs || {};
+          newConfig.ipfs.cid = "";
+        }
+
+        // Serialize the config back to TOML format
+        let updatedToml = '';
+        for (const section in newConfig) {
+          updatedToml += `[${section}]\n`;
+          for (const key in newConfig[section]) {
+            const value = newConfig[section][key];
+            if (Array.isArray(value)) {
+              updatedToml += `${key} = [${value.map(v => typeof v === 'string' ? `"${v}"` : v).join(', ')}]\n`;
+            } else {
+              updatedToml += `${key} = ${typeof value === 'string' ? `"${value}"` : value}\n`;
+            }
+          }
+          updatedToml += '\n';
+        }
+
+        await fs.writeFile(configPath, updatedToml);
+      } catch (e) {
+        console.log(chalk.yellow('Warning: Could not parse configuration file, restoring only the CID'));
+
+        // Fallback to simpler approach if parsing fails
+        let tomlContent = `[ipfs]
 # The Content ID (CID) of the project root on IPFS
 cid = "${existingConfig?.ipfs?.cid || ''}"
 
 # IPFS API version
 api_version = "v0"
 `;
-      await fs.writeFile(configPath, tomlContent);
+        await fs.writeFile(configPath, tomlContent);
+      }
       console.log(chalk.green('✓'), 'Updated hanuki.toml configuration file');
       
       console.log(chalk.green('\nHanuki has been successfully updated in the current directory.'));
@@ -182,19 +241,27 @@ program
         config = { ipfs: {} };
       }
       
+      // Update CID in the config
       config.ipfs = config.ipfs || {};
-      config.ipfs.cid = cid;
       config.ipfs.api_version = config.ipfs.api_version || 'v0';
-      
-      const tomlContent = `[ipfs]
-# The Content ID (CID) of the project root on IPFS
-cid = "${cid}"
+      config.ipfs.cid = cid;
 
-# IPFS API version
-api_version = "${config.ipfs.api_version}"
-`;
-      
-      await fs.writeFile(configPath, tomlContent);
+      // Serialize the config back to TOML format
+      let updatedToml = '';
+      for (const section in config) {
+        updatedToml += `[${section}]\n`;
+        for (const key in config[section]) {
+          const value = config[section][key];
+          if (Array.isArray(value)) {
+            updatedToml += `${key} = [${value.map(v => typeof v === 'string' ? `"${v}"` : v).join(', ')}]\n`;
+          } else {
+            updatedToml += `${key} = ${typeof value === 'string' ? `"${value}"` : value}\n`;
+          }
+        }
+        updatedToml += '\n';
+      }
+
+      await fs.writeFile(configPath, updatedToml);
       console.log(chalk.green('✓'), 'Updated configuration with new CID');
       
       console.log(chalk.green('\nProject successfully published to IPFS!'));
