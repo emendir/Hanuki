@@ -64,7 +64,7 @@ export async function publishToIPFS(ipfs, dirPath) {
 
       // The last item will be the root directory
       if (result.path === '') {
-        rootCid = result.cid.toString();
+        rootCid = result.cid ? result.cid.toString() : '';
       }
     }
 

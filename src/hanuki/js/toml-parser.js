@@ -175,10 +175,23 @@ function mapToHanukiConfig(parsedToml) {
 
     // Map URLs from project.urls section
     if (parsedToml.project.urls) {
-      config.project.urls.repository = parsedToml.project.urls.repository || config.project.urls.repository;
+      // First check for repository, then fall back to github if repository isn't specified
+      config.project.urls.repository = parsedToml.project.urls.repository ||
+                                       parsedToml.project.urls.github ||
+                                       config.project.urls.repository;
       config.project.urls.documentation = parsedToml.project.urls.documentation || config.project.urls.documentation;
       config.project.urls.homepage = parsedToml.project.urls.homepage || config.project.urls.homepage;
     }
+  }
+
+  // Handle the case where project.urls is a separate section (e.g., [project.urls])
+  if (parsedToml["project.urls"]) {
+    // First check for repository, then fall back to github if repository isn't specified
+    config.project.urls.repository = parsedToml["project.urls"].repository ||
+                                     parsedToml["project.urls"].github ||
+                                     config.project.urls.repository;
+    config.project.urls.documentation = parsedToml["project.urls"].documentation || config.project.urls.documentation;
+    config.project.urls.homepage = parsedToml["project.urls"].homepage || config.project.urls.homepage;
   }
 
   // Map IPFS section
