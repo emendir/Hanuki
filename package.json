@@ -1,6 +1,6 @@
 {
   "name": "hanuki",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Turn any code repository or markdown notebook into a website that can be hosted on IPFS",
   "main": "bin/index.js",
   "bin": {
