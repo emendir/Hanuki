@@ -1,6 +1,6 @@
 // renderer.js - Module for rendering project files and content
 
-import { PROJECT_FILES_PATH, getFileExtension, getRelativeProjectPath, encodePathForUrl, fetchProjectFile, getProjectFileUrl} from './filesystem.js';
+import { PROJECT_FILES_PATH, getFileExtension, getRelativeProjectPath, encodePathForUrl, fetchProjectFile, getProjectFileUrl, normalizePath} from './filesystem.js';
 import { setUrlFile } from './ui.js';
 
 // UI Components for rendering (these will be initialized later)
@@ -73,13 +73,16 @@ async function loadProjectMarkdownFile(filePath) {
   const relativePath = getRelativeProjectPath(filePath);
   console.log(`Loading MD: ${relativePath}`);
 
+  console.log("Initialising Markdown renderer");
+  const basePath=`${window.location.origin}/${PROJECT_FILES_PATH}`;
+  console.log(basePath);
+  console.log(relativePath);
   // Create a new document for markdown rendering
   mdRenderer.src = 'about:blank';
 
   // Wait for iframe to load before configuring
   mdRenderer.onload = () => {
     const doc = mdRenderer.contentDocument;
-
     // Create basic HTML structure
     doc.open();
     doc.write(`
@@ -97,12 +100,9 @@ async function loadProjectMarkdownFile(filePath) {
           // Docsify Configuration
           window.$docsify = {
             name: 'Simple Docsify Template',
-            basePath: '${getProjectFileUrl("")}',
-            relativePath: false,
+            basePath: '${basePath}',
             hideSidebar: true,
             homepage: '${relativePath}',
-            // Add router mode to enable full control over link behavior
-            routerMode: 'history'
           };
 
           // Handle link clicks inside the renderer

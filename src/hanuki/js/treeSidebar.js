@@ -12,8 +12,10 @@ var CURRENT_PROJECT_PATH="";
  */
 async function initFileExplorer() {
   // ensure we only load once for a given PROJECT_FILES_PATH
-  if (CURRENT_PROJECT_PATH == parent.PROJECT_FILES_PATH)
+  if (CURRENT_PROJECT_PATH == parent.PROJECT_FILES_PATH){
+    console.log(`File Explorer already initialised ${CURRENT_PROJECT_PATH}`)
     return
+  }
   CURRENT_PROJECT_PATH = parent.PROJECT_FILES_PATH
   console.log("Initialising File Explorer...")
   
@@ -208,3 +210,4 @@ window.Scale = setFontScale; // Legacy naming for backward compatibility
 
 // Initialize when the document is loaded
 document.addEventListener('DOMContentLoaded', initFileExplorer);
+console.log("HERE")

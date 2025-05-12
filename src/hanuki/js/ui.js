@@ -166,7 +166,7 @@ function createProjectSiteContainer(){
   // Create and add folder sidebar
   folderSidebar = document.createElement('object');
   folderSidebar.id = "folder_sidebar";
-  folderSidebar.data = "/hanuki/TreeSidebar.html";
+  folderSidebar.data = `${window.location.origin}/${PROJECT_FILES_PATH}/hanuki/TreeSidebar.html`;
   folderSidebar.style.position = "absolute";
   folderSidebar.style.visibility = "hidden";
   document.body.appendChild(folderSidebar);

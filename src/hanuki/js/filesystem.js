@@ -1,10 +1,15 @@
 // filesystem.js - Module for interacting with the project filesystem
 
-import { parseToml, mapToHanukiConfig } from './toml-parser.js';
+import {
+  parseToml,
+  mapToHanukiConfig
+} from './toml-parser.js';
 
 // Project filesystem configuration
-const PROJECT_FILES_PATH = '/';
+const PROJECT_FILES_PATH_REL = '/';
+const PROJECT_FILES_PATH = `${window.location.pathname}/${PROJECT_FILES_PATH_REL}`;
 const DEFAULT_PAGE = '/ReadMe.md';
+
 
 /**
  * Replaces spaces with URL-safe symbols
@@ -19,6 +24,7 @@ function encodePathForUrl(path) {
     .map(encodeURIComponent) // encode each path segment
     .join("/");
 }
+
 function decodePathFromUrl(path) {
   if (path === null)
     return null
@@ -27,11 +33,13 @@ function decodePathFromUrl(path) {
     .map(decodeURIComponent) // encode each path segment
     .join("/");
 }
+
 function getProjectFileUrl(filePath) {
   const safePath = encodePathForUrl(getRelativeProjectPath(filePath));
   const fullPath = normalizePath(`/${PROJECT_FILES_PATH}/${safePath}`)
   return `${window.location.origin}${fullPath}`;
 }
+
 async function fetchProjectFile(filePath) {
   const response = await fetch(getProjectFileUrl(filePath));
   if (!response.ok) throw new Error(`Failed to load ${filePath}: ${response.statusText}`);
@@ -147,12 +155,12 @@ async function loadConfig() {
   try {
     // Try to load hanuki.toml first
     console.log("Attempting to load configuration from hanuki.toml");
-    let response = await fetch('/hanuki.toml');
+    let response = await fetch(getProjectFileUrl("/hanuki.toml"));
 
     // If hanuki.toml is not found, try to load pyproject.toml
     if (!response.ok) {
       console.log("hanuki.toml not found, attempting to load from pyproject.toml");
-      response = await fetch('/pyproject.toml');
+      response = await fetch(getProjectFileUrl("/pyproject.toml"));
 
       // If both files are not found, throw an error
       if (!response.ok) {
@@ -166,7 +174,7 @@ async function loadConfig() {
     }
 
     const tomlContent = await response.text();
-    console.log("TOML content:", tomlContent);
+    // console.log("TOML content:", tomlContent);
 
     // Parse TOML content using our custom parser
     const parsedToml = parseToml(tomlContent);
@@ -292,9 +300,9 @@ function shouldIgnorePath(path, config, mode = 'treeView') {
 function matchesPattern(path, pattern) {
   // Convert glob pattern to regex
   const regexPattern = pattern
-    .replace(/\./g, '\\.')   // Escape dots
-    .replace(/\*/g, '.*')    // * becomes .*
-    .replace(/\?/g, '.')     // ? becomes .
+    .replace(/\./g, '\\.') // Escape dots
+    .replace(/\*/g, '.*') // * becomes .*
+    .replace(/\?/g, '.') // ? becomes .
     .replace(/\/\*\*/g, '(\/.*)?') // /**/ becomes (/.*)? for directory wildcards
 
   const regex = new RegExp(`^${regexPattern}$`);
@@ -318,10 +326,12 @@ function filterDirectoryItems(dirItems, dirPath, config, mode = 'treeView') {
   });
 }
 
+
+
 // Export public API
 export {
-  PROJECT_FILES_PATH,
   DEFAULT_PAGE,
+  PROJECT_FILES_PATH,
   loadConfig,
   listProjectDir,
   isProjectResource,

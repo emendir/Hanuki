@@ -9,9 +9,9 @@ set -e  # Exit on error
 echo "Uninstalling current global version..."
 npm rm -g hanuki
 
-# Step 2: Bump patch version
-echo "Bumping version..."
-npm version patch
+# # Step 2: Bump patch version
+# echo "Bumping version..."
+# npm version patch
 
 # Step 3: Create package tarball
 echo "Creating package tarball..."
