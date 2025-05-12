@@ -17,13 +17,16 @@ const __dirname = dirname(__filename);
 const packageDir = path.resolve(__dirname, '..');
 const sourceDir = path.resolve(packageDir, 'src');
 
+// Import package.json
+const packageJson = JSON.parse(fs.readFileSync(path.join(packageDir, 'package.json'), 'utf8'));
+
 // Create the CLI program
 const program = new Command();
 
 program
-  .name('hanuki')
-  .description('Turn any code repository or markdown notebook into a website that can be hosted on IPFS')
-  .version('0.1.0');
+  .name(packageJson.name)
+  .description(packageJson.description)
+  .version(packageJson.version);
 
 // Init command
 program
