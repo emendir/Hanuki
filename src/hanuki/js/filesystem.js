@@ -2,7 +2,8 @@
 
 import {
   parseToml,
-  mapToHanukiConfig
+  mapToHanukiConfig,
+  DEFAULT_CONFIG
 } from './toml-parser.js';
 
 // Project filesystem configuration
@@ -189,36 +190,7 @@ async function loadConfig() {
     console.error("Error loading config:", error);
 
     // Return a default configuration as fallback
-    return {
-      project: {
-        name: "Unnamed Project",
-        version: "0.1.0",
-        description: "",
-        authors: [],
-        license: "",
-        keywords: [],
-        urls: {
-          repository: "",
-          documentation: "",
-          homepage: ""
-        }
-      },
-      ipfs: {
-        cid: null,
-        apiVersion: 'v0'
-      },
-      treeView: {
-        useGitignore: true,
-        include: [],
-        ignore: []
-      },
-      ipfsPublishing: {
-        useTreeViewIgnore: true,
-        useGitignore: true,
-        include: [],
-        ignore: []
-      }
-    };
+    return DEFAULT_CONFIG;
   }
 }
 

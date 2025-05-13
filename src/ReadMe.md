@@ -5,7 +5,7 @@
 
 
 Relative:
-![](./DemoProject/Multi%20Media/Meme.png)
+![](./DemoProject/Multi%20Media/Image.jpg)
 
 Absolute:
-![](/DemoProject/Multi%20Media/Meme.png)
+![](/DemoProject/Multi%20Media/Image.jpg)

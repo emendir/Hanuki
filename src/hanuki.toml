@@ -6,6 +6,7 @@ description = "A project rendered with Hanuki"
 authors = ["Your Name <your.email@example.com>"]
 license = "MIT"
 keywords = ["web", "documentation", "ipfs"]
+icon="DemoProject/Multi Media/ClipartKey_549075.png"
 
 [project.urls]
 repository = "https://github.com/username/project"
