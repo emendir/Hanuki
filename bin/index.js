@@ -170,17 +170,8 @@ program
 
         await fs.writeFile(configPath, updatedToml);
       } catch (e) {
-        console.log(chalk.yellow('Warning: Could not parse configuration file, restoring only the CID'));
+        console.log(chalk.yellow('Warning: Could not parse configuration file'));
 
-        // Fallback to simpler approach if parsing fails
-        let tomlContent = `[ipfs]
-# The Content ID (CID) of the project root on IPFS
-cid = "${existingConfig?.ipfs?.cid || ''}"
-
-# IPFS API version
-api_version = "v0"
-`;
-        await fs.writeFile(configPath, tomlContent);
       }
       console.log(chalk.green('✓'), 'Updated hanuki.toml configuration file');
       

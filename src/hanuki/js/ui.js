@@ -80,7 +80,7 @@ function initUI() {
  * @param {number} height - Window height (defaults to window.innerHeight)
  */
 async function resize(width, height) {
-  
+
   if (!resizeEnabled) {
     console.log("[Hanuki]: Resizing disabled.")
     return;
@@ -105,7 +105,7 @@ async function resize(width, height) {
     folderSidebar.style.visibility = "visible";
     folderSidebar.width = innerLeft;
     folderSidebar.height = height - innerTop;
-    
+
     folderSidebar.style.left = 0;
     folderSidebar.style.top = innerTop;
   }
@@ -122,16 +122,16 @@ async function resize(width, height) {
   if (innerTop < 2 * siteTitle.clientHeight) {
     pageTitle.style.visibility = "hidden";
     siteTitle.style.top = 0;
-    
-    projectIcon.style.visibility = "hidden";
+
+    // projectIcon.style.visibility = "hidden";
   } else {
     pageTitle.style.visibility = "visible";
     pageTitle.style.left = innerLeft + 5;
     pageTitle.style.top = (innerTop - pageTitle.clientHeight) * 0.98;
-    
-    projectIcon.style.visibility = "visible";
-    
-    projectIcon.height =innerTop;
+
+    // projectIcon.style.visibility = "visible";
+    projectIcon.style.left = 0;
+    projectIcon.height = innerTop(0.9);
   }
 
   // Handle content container visibility and sizing
@@ -155,7 +155,7 @@ async function resize(width, height) {
   // Position main title
   siteTitle.style.top = (innerTop - siteTitle.clientHeight) / 2;
   siteTitle.style.left = 10 + innerLeft / 2;
-  
+
 }
 
 /**
@@ -354,11 +354,15 @@ function updateUIFromConfig(config) {
   } else if (githubButton) {
     githubButton.style.display = 'none';
   }
-  if (config.project.icon != ""){
+  if (config.project.icon != "") {
     projectIcon.src = getProjectFileUrl(config.project.icon);
   }
 }
 
+function setResizeEnabled(enabled){
+  resizeEnabled = enabled;
+}
+window.setResizeEnabled=setResizeEnabled;
 // Export public API
 export {
   initUI,

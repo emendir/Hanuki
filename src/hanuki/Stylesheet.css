@@ -99,3 +99,7 @@ iframe {
   color: white;
   /* Optional text color */
 }
+
+.project-icon{
+  position: absolute;
+}
