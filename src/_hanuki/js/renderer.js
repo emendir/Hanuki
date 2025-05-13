@@ -313,7 +313,8 @@ function initRenderer(container) {
         // Determine if path is absolute or relative
         let fullPath = path;
         if (event.data.type=="markdown-link-click"){
-          fullPath+=".md";
+          if (isProjectResource(fullPath+".md"))
+            fullPath+=".md";
         }
         if (!path.startsWith('/')) {
           // For relative paths, resolve against current path

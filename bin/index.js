@@ -232,31 +232,26 @@ program
         config = { ipfs: {} };
       }
       
-      // Update CID in the config
-      config.ipfs = config.ipfs || {};
-      config.ipfs.api_version = config.ipfs.api_version || 'v0';
-      config.ipfs.cid = cid;
-
-      // Serialize the config back to TOML format
-      let updatedToml = '';
-      for (const section in config) {
-        updatedToml += `[${section}]\n`;
-        for (const key in config[section]) {
-          const value = config[section][key];
-          if (Array.isArray(value)) {
-            updatedToml += `${key} = [${value.map(v => typeof v === 'string' ? `"${v}"` : v).join(', ')}]\n`;
-          } else if (typeof value === 'object' && value !== null) {
-            // Handle complex objects by converting to JSON string
-            updatedToml += `${key} = "${JSON.stringify(value)}"\n`;
-          } else {
-            updatedToml += `${key} = ${typeof value === 'string' ? `"${value}"` : value}\n`;
-          }
-        }
-        updatedToml += '\n';
-      }
-
-      await fs.writeFile(configPath, updatedToml);
-      console.log(chalk.green('✓'), 'Updated configuration with new CID');
+      // // Serialize the config back to TOML format
+      // let updatedToml = '';
+      // for (const section in config) {
+      //   updatedToml += `[${section}]\n`;
+      //   for (const key in config[section]) {
+      //     const value = config[section][key];
+      //     if (Array.isArray(value)) {
+      //       updatedToml += `${key} = [${value.map(v => typeof v === 'string' ? `"${v}"` : v).join(', ')}]\n`;
+      //     } else if (typeof value === 'object' && value !== null) {
+      //       // Handle complex objects by converting to JSON string
+      //       updatedToml += `${key} = "${JSON.stringify(value)}"\n`;
+      //     } else {
+      //       updatedToml += `${key} = ${typeof value === 'string' ? `"${value}"` : value}\n`;
+      //     }
+      //   }
+      //   updatedToml += '\n';
+      // }
+      // 
+      // await fs.writeFile(configPath, updatedToml);
+      // console.log(chalk.green('✓'), 'Updated configuration with new CID');
       
       console.log(chalk.green('\nProject successfully published to IPFS!'));
       console.log(chalk.blue('CID:'), chalk.green(cid));

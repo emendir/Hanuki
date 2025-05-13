@@ -6,7 +6,7 @@ description = "A project rendered with Hanuki"
 authors = ["Emendir"]
 license = "CC0"
 keywords = ["web", "documentation", "ipfs"]
-icon="DemoProject/Multi Media/ClipartKey_549075.png"
+icon="DemoProject/Multi Media/DemoProjectIcon.svg"
 
 [project.urls]
 repository = "https://github.com/username/project"

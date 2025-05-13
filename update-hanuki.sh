@@ -24,14 +24,14 @@ TARBALL="./dist/$TARBALL"
 echo "Using tarball: $TARBALL"
 
 
-# # Step 5: Install globally without symlinking
-# echo "Installing globally (without symlinking)..."
-# npm install -g --no-link "./$TARBALL"
-# 
-
 # Step 5: Install globally without symlinking
-echo "Installing globally (with symlinking)..."
-npm link 
+echo "Installing globally (without symlinking)..."
+npm install -g --no-link "./$TARBALL"
+
+
+# # Step 5: Install globally without symlinking
+# echo "Installing globally (with symlinking)..."
+# npm link 
 
 
 # Step 6: Verify installation

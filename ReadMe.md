@@ -1,6 +1,6 @@
 # Hanuki
 
-Turn any code repository or markdown notebook into a website that can be hosted on IPFS.
+Turn any code repository or markdown notebook into an explorable IPFS website.
 It allows the user to explore a notebook or code repository in their browser with purely client-side dynamic rendering.
 
 ## Features
