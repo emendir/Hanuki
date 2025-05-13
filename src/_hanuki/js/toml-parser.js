@@ -138,10 +138,6 @@ function parseArray(arrayStr, lines, lineIndex) {
       },
       icon:"",
     },
-    ipfs: {
-      cid: null,
-      apiVersion: 'v0'
-    },
     treeView: {
       useGitignore: true,
       include: [],
@@ -197,11 +193,6 @@ function mapToHanukiConfig(parsedToml) {
     config.project.urls.homepage = parsedToml["project.urls"].homepage || DEFAULT_CONFIG.project.urls.homepage;
   }
 
-  // Map IPFS section
-  if (parsedToml.ipfs) {
-    config.ipfs.cid = parsedToml.ipfs.cid || DEFAULT_CONFIG.ipfs.cid;
-    config.ipfs.apiVersion = parsedToml.ipfs.api_version || DEFAULT_CONFIG.ipfs.apiVersion;
-  }
 
   // Map tree-view section (lowercase with hyphen)
   if (parsedToml['tree-view']) {

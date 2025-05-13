@@ -123,7 +123,7 @@ program
           existingConfig = toml.parse(configContent);
           // console.log(chalk.green('✓'), 'Backed up existing configuration');
         } catch (e) {
-          console.log(chalk.yellow('Warning: Could not parse existing configuration, will create a new one'));
+          console.log(chalk.yellow('Warning: Could not parse existing configuration.'));
         }
       }
       

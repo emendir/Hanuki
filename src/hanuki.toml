@@ -3,8 +3,8 @@
 name = "Hanuki Example"
 version = "0.1.0"
 description = "A project rendered with Hanuki"
-authors = ["Your Name <your.email@example.com>"]
-license = "MIT"
+authors = ["Emendir"]
+license = "CC0"
 keywords = ["web", "documentation", "ipfs"]
 icon="DemoProject/Multi Media/ClipartKey_549075.png"
 
@@ -13,12 +13,7 @@ repository = "https://github.com/username/project"
 documentation = "https://docs.example.com"
 homepage = "https://example.com"
 
-[ipfs]
-# The Content ID (CID) of the project root on IPFS
-cid = "bafybeiht5b52yheqwgoo7fvir45bdm27u6ycbksm4bt6bqlhmudyo3m74a"
 
-# IPFS API version
-api_version = "v0"
 
 [tree-view]
 # NOT WORKING YET Whether to use .gitignore patterns for the tree view

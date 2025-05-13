@@ -1,7 +1,7 @@
 ## General
 
-- rename hanuki folder to `_hanuki`
--
+- make title work as homepage
+- 
 
 ## Config
 

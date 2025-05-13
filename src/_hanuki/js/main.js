@@ -1,12 +1,34 @@
 // main.js - Main entry point for the application
 
-import { loadConfig, listProjectDir, filterDirectoryItems } from './filesystem.js';
-import { activateScrollbars, deactivateScrollbars, makeContentSelectable, makeContentUnselectable } from './renderer.js';
-import { initUI, resize, downloadSource, changeSiteSubpage, scale, onLoad, onMouseMove, onMouseWheel, onMouseUp, updateUIFromConfig } from './ui.js';
+import {
+  loadConfig,
+  listProjectDir,
+  filterDirectoryItems
+} from './filesystem.js';
+import {
+  activateScrollbars,
+  deactivateScrollbars,
+  makeContentSelectable,
+  makeContentUnselectable
+} from './renderer.js';
+import {
+  initUI,
+  resize,
+  downloadSource,
+  changeSiteSubpage,
+  scale,
+  onLoad,
+  onMouseMove,
+  onMouseWheel,
+  onMouseUp,
+  updateUIFromConfig
+} from './ui.js';
 
 // Global configuration
 window.hanukiConfig = null;
 var config = null;
+
+
 // Initialize the application
 async function initApp() {
   // Initialize UI components
@@ -24,9 +46,21 @@ async function initApp() {
 
   // Initialize layout
   resize();
+
+  // Dispatch from the container element
+  window.dispatchEvent(initialised);
+  
+  
 }
 
-function getConfig(){
+const initialised = new CustomEvent('initialised', {
+  detail: {
+    message: 'Hello from inside the content container!',
+    timestamp: Date.now()
+  }
+});
+
+function getConfig() {
   return config;
 }
 // Enhanced version of listProjectDir that applies filtering

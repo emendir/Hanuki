@@ -36,8 +36,8 @@ async function loadProjectPage(filePath) {
   } else {
     loadProjectCodeFile(filePath);
   }
+  
 }
-
 /**
  * Load and display a code file with syntax highlighting
  * @param {string} filePath - Path to the code file

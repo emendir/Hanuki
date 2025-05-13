@@ -101,7 +101,7 @@ async function resize(width, height) {
     downloadButton.style.visibility = "hidden";
   } else {
     if (!folderSidebar) await renderProjectPage();
-    downloadButton.style.visibility = "visible";
+    // downloadButton.style.visibility = "visible";
     folderSidebar.style.visibility = "visible";
     folderSidebar.width = innerLeft;
     folderSidebar.height = height - innerTop;
@@ -124,19 +124,19 @@ async function resize(width, height) {
     siteTitle.style.top = 0;
 
     // projectIcon.style.visibility = "hidden";
-    
+
   } else {
-        // projectIcon.style.visibility = "visible";
-    projectIcon.style.left = innerTop*0.1;
-    projectIcon.style.top = innerTop*0.1;
-    projectIcon.height = innerTop*0.8;
-  
+    // projectIcon.style.visibility = "visible";
+    projectIcon.style.left = innerTop * 0.1;
+    projectIcon.style.top = innerTop * 0.1;
+    projectIcon.height = innerTop * 0.8;
+
     pageTitle.style.visibility = "visible";
     pageTitle.style.left = innerLeft + 5;
     pageTitle.style.left = folderSidebar.width;
     pageTitle.style.top = (innerTop - pageTitle.clientHeight) * 0.98;
 
-}
+  }
 
   // Handle content container visibility and sizing
   if (height < siteTitle.clientHeight * 2 || height < 150) {
@@ -179,7 +179,9 @@ function positionUIElements(topSpace) {
   // Position GitHub button
   githubButton.style.top = topSpace / 7;
   githubButton.height = topSpace * 3 / 7;
-  githubButton.style.right = donateButton.clientWidth + topSpace / 7 + downloadButton.clientWidth + 2 * topSpace / 7;
+
+  // githubButton.style.right = donateButton.clientWidth + topSpace / 7 + downloadButton.clientWidth + 2 * topSpace / 7;
+  githubButton.style.right = downloadButton.style.right;
 }
 
 function createProjectSiteContainer() {
@@ -231,7 +233,7 @@ async function renderProjectPage() {
   await setUrlFile(fileValue);
   loadProjectPage(fileValue);
 
-
+  pageTitle.textContent = fileValue;
 }
 
 /**
@@ -264,8 +266,11 @@ async function setUrlFile(filePath) {
   currentUrl.search = urlParams.toString();
 
   const newUrlStr = currentUrl.href.replaceAll("%2F", "/");
-  try{window.history.pushState({}, '', newUrlStr);}
-  catch{console.log("Failed to update URL.")}
+  try {
+    window.history.pushState({}, '', newUrlStr);
+  } catch {
+    console.log("Failed to update URL.")
+  }
 }
 
 /**
@@ -285,7 +290,7 @@ async function changeSiteSubpage(file, name = "") {
 
   loadProjectPage(file);
   setUrlFile(file);
-  pageTitle.innerHTML = name;
+  pageTitle.textContent = file;
 
   if (isEmbedded) {
     if (typeof parent.onSiteSubPageChanged === 'function') {
@@ -343,7 +348,7 @@ function updateUIFromConfig(config) {
 
   // Update title elements with the project name from config
   if (config.project.name) {
-    if (pageTitle) pageTitle.textContent = config.project.name;
+    // if (pageTitle) pageTitle.textContent = config.project.description;
     if (siteTitle) siteTitle.textContent = config.project.name;
 
     // Also update document title
@@ -364,10 +369,10 @@ function updateUIFromConfig(config) {
   }
 }
 
-function setResizeEnabled(enabled){
+function setResizeEnabled(enabled) {
   resizeEnabled = enabled;
 }
-window.setResizeEnabled=setResizeEnabled;
+window.setResizeEnabled = setResizeEnabled;
 // Export public API
 export {
   initUI,
