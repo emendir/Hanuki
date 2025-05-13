@@ -124,15 +124,19 @@ async function resize(width, height) {
     siteTitle.style.top = 0;
 
     // projectIcon.style.visibility = "hidden";
+    
   } else {
+        // projectIcon.style.visibility = "visible";
+    projectIcon.style.left = innerTop*0.1;
+    projectIcon.style.top = innerTop*0.1;
+    projectIcon.height = innerTop*0.8;
+  
     pageTitle.style.visibility = "visible";
     pageTitle.style.left = innerLeft + 5;
+    pageTitle.style.left = folderSidebar.width;
     pageTitle.style.top = (innerTop - pageTitle.clientHeight) * 0.98;
 
-    // projectIcon.style.visibility = "visible";
-    projectIcon.style.left = 0;
-    projectIcon.height = innerTop(0.9);
-  }
+}
 
   // Handle content container visibility and sizing
   if (height < siteTitle.clientHeight * 2 || height < 150) {
@@ -154,7 +158,7 @@ async function resize(width, height) {
 
   // Position main title
   siteTitle.style.top = (innerTop - siteTitle.clientHeight) / 2;
-  siteTitle.style.left = 10 + innerLeft / 2;
+  siteTitle.style.left = folderSidebar.width;
 
 }
 
@@ -260,7 +264,8 @@ async function setUrlFile(filePath) {
   currentUrl.search = urlParams.toString();
 
   const newUrlStr = currentUrl.href.replaceAll("%2F", "/");
-  window.history.pushState({}, '', newUrlStr);
+  try{window.history.pushState({}, '', newUrlStr);}
+  catch{console.log("Failed to update URL.")}
 }
 
 /**

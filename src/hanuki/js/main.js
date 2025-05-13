@@ -6,14 +6,14 @@ import { initUI, resize, downloadSource, changeSiteSubpage, scale, onLoad, onMou
 
 // Global configuration
 window.hanukiConfig = null;
-
+var config = null;
 // Initialize the application
 async function initApp() {
   // Initialize UI components
   initUI();
 
   // Load configuration
-  const config = await loadConfig();
+  config = await loadConfig();
   console.log("Configuration loaded:", config);
 
   // Store configuration globally
@@ -26,6 +26,9 @@ async function initApp() {
   resize();
 }
 
+function getConfig(){
+  return config;
+}
 // Enhanced version of listProjectDir that applies filtering
 async function listFilteredProjectDir(dirPath, mode = 'treeView') {
   const items = await listProjectDir(dirPath);
@@ -56,6 +59,7 @@ window.onMouseWheel = onMouseWheel;
 window.onMouseUp = onMouseUp;
 window.listProjectDir = listProjectDir;
 window.listFilteredProjectDir = listFilteredProjectDir;
+window.getConfig = getConfig;
 
 // Legacy PascalCase versions (for backward compatibility)
 window.Resize = resize;

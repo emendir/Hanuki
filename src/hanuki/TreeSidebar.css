@@ -13,6 +13,7 @@ body {
 
 .tree-item {
   padding: 3px 0;
+  color: #ff9500;
   margin: 2px 0;
   cursor: pointer;
   display: flex;

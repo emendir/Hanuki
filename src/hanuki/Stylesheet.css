@@ -55,6 +55,7 @@ iframe {
   color: #fff;
   /* font-size: 30; */
   font-size: clamp(16px, 5vw, 30px);
+  color: #ff9500;
 }
 
 .Title {
@@ -65,13 +66,6 @@ iframe {
   /* font-size: 50; */
   font-size: clamp(16px, 5vw, 50px);
   white-space: nowrap;
-}
-
-.FolderSidebar {
-  position: absolute;
-  left: 0;
-  color: #fff;
-  font-size: 50;
 }
 
 .DownloadButton {
@@ -89,6 +83,7 @@ iframe {
 .Donate {
   position: absolute;
   right: 0;
+  cursor: pointer;
   top: 0;
   font-size: 30;
   display: flex;
@@ -100,6 +95,6 @@ iframe {
   /* Optional text color */
 }
 
-.project-icon{
+.project-icon {
   position: absolute;
 }

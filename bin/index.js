@@ -121,7 +121,7 @@ program
         const configContent = await fs.readFile(configPath, 'utf8');
         try {
           existingConfig = toml.parse(configContent);
-          console.log(chalk.green('✓'), 'Backed up existing configuration');
+          // console.log(chalk.green('✓'), 'Backed up existing configuration');
         } catch (e) {
           console.log(chalk.yellow('Warning: Could not parse existing configuration, will create a new one'));
         }
@@ -136,44 +136,44 @@ program
       await fs.copy(path.join(sourceDir, 'index.html'), path.join(targetDir, 'index.html'));
       console.log(chalk.green('✓'), 'Updated index.html');
       
-      // Copy hanuki.toml from source, then restore existing CID
-      await fs.copy(path.join(sourceDir, 'hanuki.toml'), path.join(configPath));
-
-      // Read the new config file
-      const newConfigContent = await fs.readFile(configPath, 'utf8');
-      try {
-        const newConfig = toml.parse(newConfigContent);
-
-        // Restore the existing CID
-        if (existingConfig && existingConfig.ipfs && existingConfig.ipfs.cid) {
-          newConfig.ipfs = newConfig.ipfs || {};
-          newConfig.ipfs.cid = existingConfig.ipfs.cid;
-        } else {
-          newConfig.ipfs = newConfig.ipfs || {};
-          newConfig.ipfs.cid = "";
-        }
-
-        // Serialize the config back to TOML format
-        let updatedToml = '';
-        for (const section in newConfig) {
-          updatedToml += `[${section}]\n`;
-          for (const key in newConfig[section]) {
-            const value = newConfig[section][key];
-            if (Array.isArray(value)) {
-              updatedToml += `${key} = [${value.map(v => typeof v === 'string' ? `"${v}"` : v).join(', ')}]\n`;
-            } else {
-              updatedToml += `${key} = ${typeof value === 'string' ? `"${value}"` : value}\n`;
-            }
-          }
-          updatedToml += '\n';
-        }
-
-        await fs.writeFile(configPath, updatedToml);
-      } catch (e) {
-        console.log(chalk.yellow('Warning: Could not parse configuration file'));
-
-      }
-      console.log(chalk.green('✓'), 'Updated hanuki.toml configuration file');
+      // // Copy hanuki.toml from source, then restore existing CID
+      // await fs.copy(path.join(sourceDir, 'hanuki.toml'), path.join(configPath));
+      // 
+      // // Read the new config file
+      // const newConfigContent = await fs.readFile(configPath, 'utf8');
+      // try {
+      //   const newConfig = toml.parse(newConfigContent);
+      // 
+      //   // Restore the existing CID
+      //   if (existingConfig && existingConfig.ipfs && existingConfig.ipfs.cid) {
+      //     newConfig.ipfs = newConfig.ipfs || {};
+      //     newConfig.ipfs.cid = existingConfig.ipfs.cid;
+      //   } else {
+      //     newConfig.ipfs = newConfig.ipfs || {};
+      //     newConfig.ipfs.cid = "";
+      //   }
+      // 
+      //   // Serialize the config back to TOML format
+      //   let updatedToml = '';
+      //   for (const section in newConfig) {
+      //     updatedToml += `[${section}]\n`;
+      //     for (const key in newConfig[section]) {
+      //       const value = newConfig[section][key];
+      //       if (Array.isArray(value)) {
+      //         updatedToml += `${key} = [${value.map(v => typeof v === 'string' ? `"${v}"` : v).join(', ')}]\n`;
+      //       } else {
+      //         updatedToml += `${key} = ${typeof value === 'string' ? `"${value}"` : value}\n`;
+      //       }
+      //     }
+      //     updatedToml += '\n';
+      //   }
+      // 
+      //   await fs.writeFile(configPath, updatedToml);
+      // } catch (e) {
+      //   console.log(chalk.yellow('Warning: Could not parse configuration file'));
+      // 
+      // }
+      // console.log(chalk.green('✓'), 'Updated hanuki.toml configuration file');
       
       console.log(chalk.green('\nHanuki has been successfully updated in the current directory.'));
     } catch (error) {
