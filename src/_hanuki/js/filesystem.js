@@ -208,16 +208,16 @@ function shouldIgnorePath(path, config, mode = 'treeView') {
   const normalizedPath = normalizePath(path);
 
   // Special case for Hanuki system files
-  const hanukiSystemFiles = ['/hanuki', '/hanuki.toml', '/index.html'];
+  const hanukiSystemFiles = ['/_hanuki', '/hanuki.toml', '/index.html'];
 
   if (mode === 'treeView') {
     // Always ignore Hanuki system files in TreeView
-    if (hanukiSystemFiles.some(file => normalizedPath === file || normalizedPath.startsWith('/hanuki/'))) {
+    if (hanukiSystemFiles.some(file => normalizedPath === file || normalizedPath.startsWith('/_hanuki/'))) {
       return true; // Ignore this path in TreeView
     }
   } else if (mode === 'ipfsPublishing') {
     // Always include Hanuki system files when publishing to IPFS
-    if (hanukiSystemFiles.some(file => normalizedPath === file || normalizedPath.startsWith('/hanuki/'))) {
+    if (hanukiSystemFiles.some(file => normalizedPath === file || normalizedPath.startsWith('/_hanuki/'))) {
       return false; // Don't ignore this path in IPFS publishing
     }
   }

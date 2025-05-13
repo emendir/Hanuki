@@ -38,7 +38,7 @@ program
       console.log(chalk.blue('Installing Hanuki in'), chalk.green(targetDir));
       
       // Check if hanuki is already installed
-      if (fs.existsSync(path.join(targetDir, 'hanuki')) || 
+      if (fs.existsSync(path.join(targetDir, '_hanuki')) || 
           fs.existsSync(path.join(targetDir, 'index.html')) ||
           fs.existsSync(path.join(targetDir, 'hanuki.toml'))) {
         console.log(chalk.yellow('Hanuki seems to be already installed. Use'), 
@@ -48,7 +48,7 @@ program
       }
       
       // Copy hanuki directory
-      await fs.copy(path.join(sourceDir, 'hanuki'), path.join(targetDir, 'hanuki'));
+      await fs.copy(path.join(sourceDir, '_hanuki'), path.join(targetDir, '_hanuki'));
       console.log(chalk.green('✓'), 'Copied hanuki directory');
       
       // Copy index.html
@@ -106,7 +106,7 @@ program
       console.log(chalk.blue('Updating Hanuki in'), chalk.green(targetDir));
       
       // Check if hanuki is installed
-      if (!fs.existsSync(path.join(targetDir, 'hanuki')) && 
+      if (!fs.existsSync(path.join(targetDir, '_hanuki')) && 
           !fs.existsSync(path.join(targetDir, 'index.html'))) {
         console.log(chalk.yellow('Hanuki does not seem to be installed. Use'), 
                     chalk.green('hanuki init'), 
@@ -128,9 +128,9 @@ program
       }
       
       // Copy hanuki directory
-      await fs.remove(path.join(targetDir, 'hanuki'));
-      await fs.copy(path.join(sourceDir, 'hanuki'), path.join(targetDir, 'hanuki'));
-      console.log(chalk.green('✓'), 'Updated hanuki directory');
+      await fs.remove(path.join(targetDir, '_hanuki'));
+      await fs.copy(path.join(sourceDir, '_hanuki'), path.join(targetDir, '_hanuki'));
+      console.log(chalk.green('✓'), 'Updated _hanuki directory');
       
       // Copy index.html
       await fs.copy(path.join(sourceDir, 'index.html'), path.join(targetDir, 'index.html'));
@@ -193,7 +193,7 @@ program
       console.log(chalk.blue('Publishing project to IPFS from'), chalk.green(targetDir));
       
       // Check if hanuki is installed
-      if (!fs.existsSync(path.join(targetDir, 'hanuki')) || 
+      if (!fs.existsSync(path.join(targetDir, '_hanuki')) || 
           !fs.existsSync(path.join(targetDir, 'index.html'))) {
         console.log(chalk.yellow('Hanuki does not seem to be installed. Use'), 
                     chalk.green('hanuki init'), 
