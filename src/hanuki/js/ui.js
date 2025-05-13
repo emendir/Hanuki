@@ -80,7 +80,12 @@ function initUI() {
  * @param {number} height - Window height (defaults to window.innerHeight)
  */
 async function resize(width, height) {
-  if (!resizeEnabled) return;
+  
+  if (!resizeEnabled) {
+    console.log("[Hanuki]: Resizing disabled.")
+    return;
+  }
+  console.log("[Hanuki]: Resizing...")
 
   width = width || window.innerWidth;
   height = height || window.innerHeight;
@@ -100,6 +105,8 @@ async function resize(width, height) {
     folderSidebar.style.visibility = "visible";
     folderSidebar.width = innerLeft;
     folderSidebar.height = height - innerTop;
+    
+    folderSidebar.style.left = 0;
     folderSidebar.style.top = innerTop;
   }
 
@@ -148,6 +155,7 @@ async function resize(width, height) {
   // Position main title
   siteTitle.style.top = (innerTop - siteTitle.clientHeight) / 2;
   siteTitle.style.left = 10 + innerLeft / 2;
+  
 }
 
 /**
@@ -291,9 +299,9 @@ async function changeSiteSubpage(file, name = "") {
 async function scale(scale) {
   if (!contentContainer || !folderSidebar || !folderSidebar.contentDocument || !folderSidebar.contentDocument.body) return;
 
-  // Scale font sizes using logistic function
-  pageTitle.style.fontSize = 25 * (0.2 + 2 / (1 + 2 ** (-10 * (scale - 0.8))));
-  siteTitle.style.fontSize = 35 * (0.2 + 2 / (1 + 2 ** (-10 * (scale - 0.8))));
+  // // Scale font sizes using logistic function
+  // pageTitle.style.fontSize = 25 * (0.2 + 2 / (1 + 2 ** (-10 * (scale - 0.8))));
+  // siteTitle.style.fontSize = 35 * (0.2 + 2 / (1 + 2 ** (-10 * (scale - 0.8))));
 
   // Scale content if available
   if (contentContainer.contentDocument) {

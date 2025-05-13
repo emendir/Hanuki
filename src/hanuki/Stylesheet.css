@@ -53,7 +53,8 @@ iframe {
   top: 160;
   left: 0;
   color: #fff;
-  font-size: 30;
+  /* font-size: 30; */
+  font-size: clamp(16px, 5vw, 30px);
 }
 
 .Title {
@@ -61,7 +62,8 @@ iframe {
   top: 50;
   left: 50;
   color: #ff5;
-  font-size: 50;
+  /* font-size: 50; */
+  font-size: clamp(16px, 5vw, 50px);
   white-space: nowrap;
 }
 
