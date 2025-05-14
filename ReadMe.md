@@ -9,6 +9,7 @@ It allows the user to explore a notebook or code repository in their browser wit
 - rendering HTML and markdown
 - multimedia support
 - tree-explorer for the project files (dynamically lazily generated)
+- fully offline-capable with local dependencies
 
 ## Installation
 
@@ -24,6 +25,16 @@ The `hanuki` CLI tool has the following commands:
 - `hanuki init`: Installs hanuki in the current directory.
 - `hanuki update`: Updates the hanuki installation in the current directory.
 - `hanuki publish`: Publishes the current directory on IPFS.
+
+## Development
+
+### Managing Dependencies
+
+Hanuki now stores all external dependencies locally for offline use. To update these dependencies:
+
+1. Run `npm run update-deps` - This will download all required external dependencies to the `src/_hanuki/dependencies` folder.
+
+This enables Hanuki to work completely offline without requiring access to CDNs or external resources.
 
 ## Name
 
