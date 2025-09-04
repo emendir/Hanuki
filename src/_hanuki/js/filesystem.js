@@ -81,15 +81,47 @@ async function listProjectDir(dirPath) {
 
 
 /**
- * Normalize a path by removing redundant slashes and trimming leading/trailing slashes
+ * Normalize a path by resolving '.', '..', and redundant slashes.
+ * Preserves leading '/' (absolute paths) or './' (explicit relative paths).
  * @param {string} path - The path to normalize
  * @returns {string} A cleaned path string
  */
 function normalizePath(path) {
-  return path
-    .replace(/\/{2,}/g, '/') // Replace repeated slashes with one
-  // .replace(/^\.?\/*/, '')       // Remove leading './' or '/'
-  // .replace(/\/+$/, '');         // Remove trailing slashes
+  if (!path) return '';
+
+  const isAbsolute = path.startsWith('/');
+  const isDotRelative = path.startsWith('./');
+
+  // Replace multiple slashes with one
+  path = path.replace(/\/{2,}/g, '/');
+
+  const parts = path.split('/');
+  const stack = [];
+
+  for (const part of parts) {
+    if (part === '' || part === '.') {
+      continue; // skip empty or current directory
+    } else if (part === '..') {
+      if (stack.length > 0 && stack[stack.length - 1] !== '..') {
+        stack.pop();
+      } else if (!isAbsolute) {
+        // Preserve leading .. for relative paths
+        stack.push('..');
+      }
+    } else {
+      stack.push(part);
+    }
+  }
+
+  let result = stack.join('/');
+
+  if (isAbsolute) {
+    result = '/' + result;
+  } else if (isDotRelative) {
+    result = './' + result;
+  }
+
+  return result || (isAbsolute ? '/' : '.');
 }
 
 /**
@@ -112,6 +144,25 @@ function getRelativeProjectPath(fullPath) {
   return normalizedFullPath;
 }
 
+
+/**
+ * Get a full normalized path based on input and a base path.
+ * @param {string} path - The path to resolve
+ * @param {string} basePath - The base path if path is relative
+ * @returns {string} A normalized absolute path
+ */
+function getAbsolutePath(path, basePath) {
+  if (!path) return normalizePath(basePath || '/');
+
+  if (path.startsWith('/')) {
+    // Absolute path → normalize and return
+    return normalizePath(path);
+  } else {
+    // Relative path → join with basePath
+    const combined = (basePath || '') + '/' + path;
+    return normalizePath(combined);
+  }
+}
 
 
 /**
@@ -313,6 +364,7 @@ export {
   encodePathForUrl,
   fetchProjectFile,
   getProjectFileUrl,
+  getAbsolutePath,
   decodePathFromUrl,
   shouldIgnorePath,
   filterDirectoryItems

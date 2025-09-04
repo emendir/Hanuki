@@ -1,6 +1,6 @@
 // renderer.js - Module for rendering project files and content
 
-import { PROJECT_FILES_PATH, getFileExtension, getRelativeProjectPath, encodePathForUrl, fetchProjectFile, getProjectFileUrl, normalizePath} from './filesystem.js';
+import { PROJECT_FILES_PATH, isProjectResource, getFileExtension, getRelativeProjectPath, encodePathForUrl, decodePathFromUrl, fetchProjectFile, getProjectFileUrl, getAbsolutPath, normalizePath} from './filesystem.js';
 import { setUrlFile } from './ui.js';
 
 // UI Components for rendering (these will be initialized later)
@@ -10,6 +10,7 @@ let codeElement = null;
 let mdRenderer = null;
 let htmlRenderer = null;
 let mediaContainer = null;
+let current_path = "/";
 
 // File type categories
 const IMAGE_TYPES = ['jpg', 'jpeg', 'png', 'gif', 'svg', 'webp'];
@@ -21,22 +22,26 @@ const AUDIO_TYPES = ['mp3', 'wav', 'ogg', 'flac'];
  * @param {string} filePath - Path to the file
  */
 async function loadProjectPage(filePath) {
+  filePath = getAbsolutPath(filePath, current_path)
   const fileType = getFileExtension(filePath);
+  console.log(`loadProjectPage ${filePath}`)
 
   if (fileType === "md") {
-    loadProjectMarkdownFile(filePath);
+    await loadProjectMarkdownFile(filePath);
   } else if (fileType === "html" || fileType === "htm") {
-    loadProjectHtmlFile(filePath);
+    await loadProjectHtmlFile(filePath);
   } else if (IMAGE_TYPES.includes(fileType)) {
-    loadProjectImageFile(filePath);
+    await loadProjectImageFile(filePath);
   } else if (VIDEO_TYPES.includes(fileType)) {
-    loadProjectVideoFile(filePath);
+    await loadProjectVideoFile(filePath);
   } else if (AUDIO_TYPES.includes(fileType)) {
-    loadProjectAudioFile(filePath);
+    await loadProjectAudioFile(filePath);
   } else {
-    loadProjectCodeFile(filePath);
+    await loadProjectCodeFile(filePath);
   }
   
+  current_path = filePath;
+  await setUrlFile(current_path)
 }
 /**
  * Load and display a code file with syntax highlighting
@@ -71,7 +76,6 @@ async function loadProjectCodeFile(filePath) {
  */
 async function loadProjectMarkdownFile(filePath) {
   const relativePath = getRelativeProjectPath(filePath);
-  console.log(`Loading MD: ${relativePath}`);
 
   console.log("Initialising Markdown renderer");
   const basePath=`${window.location.origin}/${PROJECT_FILES_PATH}`;
@@ -120,6 +124,26 @@ async function loadProjectMarkdownFile(filePath) {
                     window.parent.postMessage({
                       type: 'markdown-link-click',
                       path: link
+                    }, '*');
+                  }
+                  else if (link && link.startsWith('#/.')) {
+                    
+                    e.preventDefault();
+
+                    // Send message to parent window
+                    window.parent.postMessage({
+                      type: 'markdown-link-click',
+                      path: link.substr(2)
+                    }, '*');
+                  }
+                  else if (link && link.startsWith('#')) {
+                    
+                    e.preventDefault();
+
+                    // Send message to parent window
+                    window.parent.postMessage({
+                      type: 'markdown-link-click',
+                      path: link.substr(1)
                     }, '*');
                   }
                 }
@@ -268,6 +292,7 @@ function removeMarkdownBackground() {
   mdRenderer.contentDocument.body.style.background = "#0000";
 }
 
+
 /**
  * Initialize renderer components
  * @param {HTMLElement} container - The container element for content
@@ -307,31 +332,30 @@ function initRenderer(container) {
   // Set up message listener for link clicks from the iframe
   window.addEventListener('message', async (event) => {
     if (event.data && event.data.type === 'markdown-link-click' && !event.data.path.includes("=")) {
-      const path = event.data.path;
-      console.log(event);
+      // const path = event.data.path;
+      const path = decodePathFromUrl(event.data.path);
       if (path) {
         // Determine if path is absolute or relative
         let fullPath = path;
-        if (event.data.type=="markdown-link-click"){
-          if (isProjectResource(fullPath+".md"))
-            fullPath+=".md";
-        }
+
         if (!path.startsWith('/')) {
           // For relative paths, resolve against current path
-          const currentPathParts = window.location.search.split('=')[1]?.split('/') || [];
+          const currentPathParts = current_path.split('/') || [];
           if (currentPathParts.length > 0) {
             // Remove the filename part
             currentPathParts.pop();
             const currentDir = currentPathParts.join('/');
-            fullPath = `${currentDir}/${path}`;
+         fullPath = getAbsolutPath(path, currentDir);
           }
         }
+          if(await isProjectResource(fullPath) == null && await isProjectResource(fullPath+".md") != null)
+            fullPath+=".md";
 
         console.log(`Markdown link clicked: ${path}, navigating to: ${fullPath}`);
 
         // Update URL and load the new page
-        await setUrlFile(fullPath);
-        // loadProjectPage(fullPath);
+        await setUrlFile(decodePathFromUrl(fullPath));
+        loadProjectPage(fullPath);
       }
     } else{
       console.log(`[MD-Renderer]: Unhandled event of type ${event.data.type} for path ${event.data.path}`)

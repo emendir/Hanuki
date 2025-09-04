@@ -260,8 +260,9 @@ async function setUrlFile(filePath) {
   const currentUrl = new URL(window.location.href);
   const urlParams = currentUrl.searchParams;
   // const safePath = encodePathForUrl(filePath);
+  // filePath = encodePathForUrl(filePath)
 
-  // console.log(`Setting URL: ${filePath}`);
+  console.log(`Setting URL: ${filePath}`);
   urlParams.set('file', filePath);
   currentUrl.search = urlParams.toString();
 
