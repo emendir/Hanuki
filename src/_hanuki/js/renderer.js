@@ -92,7 +92,7 @@ async function loadProjectMarkdownFile(filePath) {
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1.0, shrink-to-fit=no, viewport-fit=cover">
         <title>TITLE</title>
-        <link rel="stylesheet" href="${window.location.origin}/_hanuki/dependencies/docsify/themes/dark.css" />
+        <link rel="stylesheet" href="${basePath}/_hanuki/dependencies/docsify/themes/dark.css" />
       </head>
       <body>
         <div id="app"></div>
@@ -127,9 +127,9 @@ async function loadProjectMarkdownFile(filePath) {
             }, 1000); // Give Docsify time to initialize and render content
           });
         </script>
-        <script src="${window.location.origin}/_hanuki/dependencies/docsify/lib/docsify.min.js"></script>
-        <script src="${window.location.origin}/_hanuki/dependencies/docsify/lib/plugins/zoom-image.min.js"></script>
-        <script src="${window.location.origin}/_hanuki/dependencies/docsify/lib/plugins/search.js"></script>
+        <script src="${basePath}/_hanuki/dependencies/docsify/lib/docsify.min.js"></script>
+        <script src="${basePath}/_hanuki/dependencies/docsify/lib/plugins/zoom-image.min.js"></script>
+        <script src="${basePath}/_hanuki/dependencies/docsify/lib/plugins/search.js"></script>
       </body>
       </html>
     `);
