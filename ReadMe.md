@@ -50,6 +50,10 @@ Use **`npm version`** → This updates the version field in `package.json` (and 
 
   It also creates a Git tag if your project is in git.
 
+## Known Issues
+
+- Markdown embedded media partially broken: due to [bugs in Docsify, the markdown renderer used by Hanuki](https://github.com/docsifyjs/docsify/issues/1891)
+
 ## Name
 
 Derived from the Japanese _Hanafubuki_ _花吹雪_, meaning something like, perhaps exaggeratedly translated, "blossom blizzard".
