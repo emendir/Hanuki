@@ -36,6 +36,20 @@ Hanuki now stores all external dependencies locally for offline use. To update t
 
 This enables Hanuki to work completely offline without requiring access to CDNs or external resources.
 
+### Bumping Versions
+
+Use **`npm version`** → This updates the version field in `package.json` (and `package-lock.json`) according to [semver](https://semver.org/).
+
+  * Examples:
+
+    ```bash
+    npm version patch   # 1.0.0 → 1.0.1
+    npm version minor   # 1.0.0 → 1.1.0
+    npm version major   # 1.0.0 → 2.0.0
+    ```
+
+  It also creates a Git tag if your project is in git.
+
 ## Name
 
 Derived from the Japanese _Hanafubuki_ _花吹雪_, meaning something like, perhaps exaggeratedly translated, "blossom blizzard".
