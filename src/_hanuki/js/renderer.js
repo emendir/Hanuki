@@ -96,7 +96,8 @@ async function loadProjectMarkdownFile(filePath) {
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1.0, shrink-to-fit=no, viewport-fit=cover">
         <title>TITLE</title>
-        <link rel="stylesheet" href="${basePath}/_hanuki/dependencies/docsify/themes/dark.css" />
+        <link rel="stylesheet" href="${basePath}/_hanuki/dependencies/docsify/themes/core.min.css">
+        <link rel="stylesheet" href="${basePath}/_hanuki/dependencies/docsify/themes/addons/core-dark.min.css" />
       </head>
       <body>
         <div id="app"></div>

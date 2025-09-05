@@ -25,17 +25,17 @@ const dependencies = {
     'languages/css.min.js': 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/css.min.js',
     // 'languages/html.min.js': 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/html.min.js',
     'languages/bash.min.js': 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/bash.min.js',
-    'languages/sh.min.js': 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/shell.min.js',
+    'languages/shell.min.js': 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/shell.min.js',
     'languages/rust.min.js': 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/rust.min.js'
   },
   'docsify': {
     // CSS
-    'themes/dark.css': 'https://cdn.jsdelivr.net/npm/docsify/themes/dark.css',
+    'themes/addons/core-dark.min.css': 'https://cdn.jsdelivr.net/npm/docsify@5.0.0-rc.3/dist/themes/addons/core-dark.min.css',
     // Core
-    'lib/docsify.min.js': 'https://cdn.jsdelivr.net/npm/docsify@4/lib/docsify.min.js',
+    'lib/docsify.min.js': 'https://cdn.jsdelivr.net/npm/docsify@5.0.0-rc.3/dist/docsify.min.js',
     // Plugins
-    'lib/plugins/zoom-image.min.js': 'https://cdn.jsdelivr.net/npm/docsify@4/lib/plugins/zoom-image.min.js',
-    'lib/plugins/search.js': 'https://cdn.jsdelivr.net/npm/docsify@4/lib/plugins/search.js'
+    'lib/plugins/zoom-image.min.js': 'https://cdn.jsdelivr.net/npm/docsify@5.0.0-rc.3/dist/plugins/zoom-image.min.js',
+    'lib/plugins/search.js': 'https://cdn.jsdelivr.net/npm/docsify@5.0.0-rc.3/dist/plugins/search.js'
   }
 };
 
