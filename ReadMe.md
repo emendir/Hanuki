@@ -18,6 +18,23 @@ When Hanuki is installed to a project folder, it simply creates the following fi
   - `index.html`: the web-browser's entry-point to the Hanuki static website code
   - `.hanuki.toml`: a configuration file to set things like the project name 
 
+## Demo
+
+This repo contains an example show-casing many of Hanuki's features under `docs/ExampleProject`.
+
+To view it in a web-browser, you can run:
+```sh
+# upload this project to IPFS, get CID
+cid=$(ipfs add -rHq . | tail -n 1 | xargs ipfs cid base32)
+
+# compose URL from IPFS CID
+url="http://$cid.ipfs.localhost:8080/docs/ExampleProject"
+echo $url
+
+# open in URL in default browser (command for linux)
+xdg-open $url
+```
+
 ## Packaging
 
 This project is packaged as an npm package which is used as a CLI tool.

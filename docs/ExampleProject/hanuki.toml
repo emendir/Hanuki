@@ -1,0 +1,34 @@
+[project]
+# Basic project metadata
+name = "Hanuki Example"
+version = "0.1.0"
+description = "A project rendered with Hanuki"
+authors = ["Emendir"]
+license = "CC0"
+keywords = ["web", "documentation", "ipfs"]
+icon="/Multi Media/DemoProjectIcon.svg"
+
+[project.urls]
+repository = "https://github.com/username/project"
+documentation = "https://docs.example.com"
+homepage = "https://example.com"
+
+
+
+[tree-view]
+# NOT WORKING YET Whether to use .gitignore patterns for the tree view
+use_gitignore = true
+# Patterns to include in the tree view even if they would be ignored by gitignore
+include = []
+# Patterns to ignore in the tree view
+ignore = ["*.log", "**/__pycache__", "*.egg-info",".mypy_cache", ".ccls-cache"]
+
+[ipfs-publishing]
+# NOT WORKING YET Whether to use TreeView ignore settings for IPFS publishing
+use_treeview_ignore = true
+# Whether to use .gitignore patterns for IPFS publishing (overrides use_treeview_ignore)
+use_gitignore = true
+# Patterns to include when publishing to IPFS even if they would be ignored
+include = []
+# Patterns to ignore when publishing to IPFS
+ignore = []

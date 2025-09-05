@@ -1,0 +1,77 @@
+/* File Explorer Styles */
+body {
+  margin: 0;
+  padding: 10px;
+  color: #333;
+}
+
+#explorer {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.tree-item {
+  padding: 3px 0;
+  color: #ff9500;
+  margin: 2px 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.tree-folder {
+  font-weight: 500;
+}
+
+/* Aligning both files and folders to the same left margin */
+.tree-folder,
+.tree-file {
+  margin-left: 0;
+}
+
+/* Folder container styling */
+.folder-container {
+  list-style: none;
+}
+
+.tree-folder-content {
+  border-left: 1px solid #ccc;
+  margin-left: 8px;
+  padding-left: 14px;
+  display: none;
+}
+
+.tree-folder-content.active {
+  display: block;
+}
+
+.folder-icon,
+.file-icon {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  margin-right: 5px;
+  text-align: center;
+}
+
+.folder-icon:before {
+  content: '▶';
+  font-size: 12px;
+}
+
+.folder-icon.expanded:before {
+  content: '▼';
+}
+
+.file-icon:before {
+  content: '—';
+  font-size: 12px;
+  opacity: 0.6;
+}
+
+/* Hover effect for items */
+.tree-item:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+  border-radius: 3px;
+}
