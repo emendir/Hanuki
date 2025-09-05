@@ -13,14 +13,10 @@ set -e  # Exit on error
 echo "Uninstalling current global version..."
 npm rm -g hanuki
 
-# Step 4: Get the tarball filename (latest version)
-TARBALL=$(ls -t ./dist/hanuki-*.tgz | head -1)
-
-echo "Using tarball: $TARBALL"
 
 # Step 5: Install globally without symlinking
 echo "Installing globally (without symlinking)..."
-npm install -g --no-link "./$TARBALL"
+npm install -g --no-link "./"
 
 
 # Step 6: Verify installation

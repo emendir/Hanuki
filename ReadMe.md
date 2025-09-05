@@ -30,9 +30,9 @@ The `hanuki` CLI tool has the following commands:
 
 ### Managing Dependencies
 
-Hanuki now stores all external dependencies locally for offline use. To update these dependencies:
+Hanuki now stores all external dependencies locally for offline use. To update these dependencies, edit the URLs in `bin/download-deps` and run it:
 
-1. Run `npm run update-deps` - This will download all required external dependencies to the `src/_hanuki/dependencies` folder.
+1. Run `./bin/download-deps.js` - This will download all required external dependencies to the `src/_hanuki/dependencies` folder.
 
 This enables Hanuki to work completely offline without requiring access to CDNs or external resources.
 

@@ -1,1 +1,0 @@
-/mnt/Uverlin/Programming/Hanuki/bin/update-dependencies.js

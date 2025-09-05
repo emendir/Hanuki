@@ -1,6 +1,6 @@
 // renderer.js - Module for rendering project files and content
 
-import { PROJECT_FILES_PATH, isProjectResource, getFileExtension, getRelativeProjectPath, encodePathForUrl, decodePathFromUrl, fetchProjectFile, getProjectFileUrl, getAbsolutPath, normalizePath} from './filesystem.js';
+import { PROJECT_FILES_PATH, isProjectResource, getFileExtension, getRelativeProjectPath, encodePathForUrl, decodePathFromUrl, fetchProjectFile, getProjectFileUrl, getAbsolutePath, normalizePath} from './filesystem.js';
 import { setUrlFile } from './ui.js';
 
 // UI Components for rendering (these will be initialized later)
@@ -22,7 +22,7 @@ const AUDIO_TYPES = ['mp3', 'wav', 'ogg', 'flac'];
  * @param {string} filePath - Path to the file
  */
 async function loadProjectPage(filePath) {
-  filePath = getAbsolutPath(filePath, current_path)
+  filePath = getAbsolutePath(filePath, current_path)
   const fileType = getFileExtension(filePath);
   console.log(`loadProjectPage ${filePath}`)
 
@@ -345,7 +345,7 @@ function initRenderer(container) {
             // Remove the filename part
             currentPathParts.pop();
             const currentDir = currentPathParts.join('/');
-         fullPath = getAbsolutPath(path, currentDir);
+         fullPath = getAbsolutePath(path, currentDir);
           }
         }
           if(await isProjectResource(fullPath) == null && await isProjectResource(fullPath+".md") != null)
