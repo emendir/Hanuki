@@ -16,17 +16,17 @@ const depsDir = path.join(rootDir, 'src', '_hanuki', 'dependencies');
 const dependencies = {
   'highlight.js': {
     // CSS
-    'styles/dark.min.css': 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/dark.min.css',
+    'styles/dark.min.css': 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/dark.min.css',
     // Core
-    'highlight.min.js': 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js',
+    'highlight.min.js': 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js',
     // Languages
-    'languages/python.min.js': 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js',
-    'languages/javascript.min.js': 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/javascript.min.js',
-    'languages/css.min.js': 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/css.min.js',
-    'languages/html.min.js': 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/html.min.js',
-    'languages/bash.min.js': 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/bash.min.js',
-    'languages/sh.min.js': 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/sh.min.js',
-    'languages/rust.min.js': 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/rust.min.js'
+    'languages/python.min.js': 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/python.min.js',
+    'languages/javascript.min.js': 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/javascript.min.js',
+    'languages/css.min.js': 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/css.min.js',
+    // 'languages/html.min.js': 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/html.min.js',
+    'languages/bash.min.js': 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/bash.min.js',
+    'languages/sh.min.js': 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/shell.min.js',
+    'languages/rust.min.js': 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/rust.min.js'
   },
   'docsify': {
     // CSS
