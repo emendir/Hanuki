@@ -1,0 +1,32 @@
+# >>> CLEANUP
+
+# This section contains patterns to be deleted by `make clean`
+build
+dist
+*.egg-info
+**/.mypy_cache/
+__pycache__
+.pytest_cache
+.ruff_cache
+.benchmarks
+.ccls-cache
+
+*.pyc
+*.log
+*.bkp
+
+node_modules
+**/.claude/settings.local.json
+*.tgz
+# <<< CLEANUP
+*.svg
+
+
+.obsidian
+
+
+/_hanuki
+/index.html
+/hanuki.toml
+src/_hanuki/Donation.html
+
