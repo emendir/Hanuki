@@ -9,9 +9,9 @@ SCRIPT_DIR=$(dirname "$SCRIPT_PATH")
 cd $SCRIPT_DIR
 
 # update Hanuki code in DemoProject
-rsync -va ./src/_hanuki/ ./DemoProject/_hanuki/
+rsync -va ./src/_hanuki/ ./docs/ExampleProject/_hanuki/
 
-cid=$(ipfs add -rHq ./DemoProject | tail -n 1 | xargs ipfs cid base32)
+cid=$(ipfs add -rHq ./docs/ExampleProject/ | tail -n 1 | xargs ipfs cid base32)
 echo $cid
 
 brave-browser "http://$cid.ipfs.localhost:8080"

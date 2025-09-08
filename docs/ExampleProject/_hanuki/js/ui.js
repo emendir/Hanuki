@@ -258,6 +258,7 @@ async function downloadSource() {
  */
 async function setUrlFile(filePath) {
   const currentUrl = new URL(window.location.href);
+  const oldUrlStr = currentUrl.href.replaceAll("%2F", "/");
   const urlParams = currentUrl.searchParams;
   // const safePath = encodePathForUrl(filePath);
   // filePath = encodePathForUrl(filePath)
@@ -267,10 +268,17 @@ async function setUrlFile(filePath) {
   currentUrl.search = urlParams.toString();
 
   const newUrlStr = currentUrl.href.replaceAll("%2F", "/");
+  // Prevent pushing the same URL again
+  if (oldUrlStr === newUrlStr) {
+    console.log("URL already set, skipping pushState.");
+    return;
+  }
+
+  console.log(`Setting URL: ${filePath}`);
   try {
-    window.history.pushState({}, '', newUrlStr);
+    window.history.pushState({ file: filePath }, '', newUrlStr);
   } catch {
-    console.log("Failed to update URL.")
+    console.log("Failed to update URL.");
   }
 }
 
@@ -290,7 +298,7 @@ async function changeSiteSubpage(file, name = "") {
   // file = normalizePath(`/${PROJECT_FILES_PATH}/${file}`);
 
   loadProjectPage(file);
-  setUrlFile(file);
+  await setUrlFile(file);
   pageTitle.textContent = file;
 
   if (isEmbedded) {
@@ -373,6 +381,11 @@ function updateUIFromConfig(config) {
 function setResizeEnabled(enabled) {
   resizeEnabled = enabled;
 }
+window.addEventListener('popstate', () => {
+  console.log("POP")
+  console.log(window.location.href)
+  renderProjectPage();
+});
 window.setResizeEnabled = setResizeEnabled;
 // Export public API
 export {

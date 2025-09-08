@@ -1,7 +1,7 @@
 ## General
 
 - make title work as homepage
-- 
+- fix browser's back button
 
 ## Config
 
