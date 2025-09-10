@@ -9,6 +9,7 @@ SCRIPT_DIR=$(dirname "$SCRIPT_PATH")
 cd $SCRIPT_DIR
 
 # update Hanuki code in DemoProject
+rsync -va ./src/index.html ./docs/ExampleProject/
 rsync -va ./src/_hanuki/ ./docs/ExampleProject/_hanuki/
 
 cid=$(ipfs add -rHq ./docs/ExampleProject/ | tail -n 1 | xargs ipfs cid base32)
