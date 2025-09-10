@@ -85,7 +85,8 @@ async function loadProjectMarkdownFile(filePath) {
   mdRenderer.src = 'about:blank';
 
   // Wait for iframe to load before configuring
-  mdRenderer.onload = () => {
+  await new Promise((resolve) => {
+    mdRenderer.onload = () => {
     const doc = mdRenderer.contentDocument;
     // Create basic HTML structure
     doc.open();
@@ -165,8 +166,10 @@ async function loadProjectMarkdownFile(filePath) {
       if (doc.body) {
         doc.body.style.background = "#0000";
       }
-    }, 100);
+    }, 100); 
+      resolve();
   };
+  });
 
   mdRenderer.style.visibility = "visible";
   codeBlock.style.visibility = "hidden";
@@ -355,7 +358,6 @@ function initRenderer(container) {
         console.log(`Markdown link clicked: ${path}, navigating to: ${fullPath}`);
 
         // Update URL and load the new page
-        await setUrlFile(decodePathFromUrl(fullPath));
         loadProjectPage(fullPath);
       }
     } else{

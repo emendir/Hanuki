@@ -30,6 +30,7 @@ const dependencies = {
   },
   'docsify': {
     // CSS
+    'themes/core.min.css': 'https://cdn.jsdelivr.net/npm/docsify@5.0.0-rc.3/dist/themes/core.min.css',
     'themes/addons/core-dark.min.css': 'https://cdn.jsdelivr.net/npm/docsify@5.0.0-rc.3/dist/themes/addons/core-dark.min.css',
     // Core
     'lib/docsify.min.js': 'https://cdn.jsdelivr.net/npm/docsify@5.0.0-rc.3/dist/docsify.min.js',

@@ -229,9 +229,8 @@ async function renderProjectPage() {
 
 
 
-  // Update URL and load content
-  await setUrlFile(fileValue);
-  loadProjectPage(fileValue);
+  // load content and update URL
+  await loadProjectPage(fileValue);
 
   pageTitle.textContent = fileValue;
 }
@@ -263,7 +262,7 @@ async function setUrlFile(filePath) {
   // const safePath = encodePathForUrl(filePath);
   // filePath = encodePathForUrl(filePath)
 
-  console.log(`Setting URL: ${filePath}`);
+  // console.log(`Setting URL: ${filePath}`);
   urlParams.set('file', filePath);
   currentUrl.search = urlParams.toString();
 
@@ -297,8 +296,7 @@ async function changeSiteSubpage(file, name = "") {
   file = normalizePath(`/${file}`);
   // file = normalizePath(`/${PROJECT_FILES_PATH}/${file}`);
 
-  loadProjectPage(file);
-  await setUrlFile(file);
+  await loadProjectPage(file);
   pageTitle.textContent = file;
 
   if (isEmbedded) {
