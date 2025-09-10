@@ -232,7 +232,6 @@ async function renderProjectPage() {
   // load content and update URL
   await loadProjectPage(fileValue);
 
-  pageTitle.textContent = fileValue;
 }
 
 /**
@@ -256,6 +255,7 @@ async function downloadSource() {
  * @param {string} filePath - Path to set in URL
  */
 async function setUrlFile(filePath) {
+  pageTitle.textContent = filePath;
   const currentUrl = new URL(window.location.href);
   const oldUrlStr = currentUrl.href.replaceAll("%2F", "/");
   const urlParams = currentUrl.searchParams;
